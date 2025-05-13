@@ -15,6 +15,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { PrismaClientExceptionFilter } from './common/filters/prisma-client-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { AppConfig } from './config/app/app-config.type';
+import rawBodyMiddleware from './raw-body.middleware';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -35,6 +36,8 @@ async function bootstrap() {
       'X-Requested-With',
     ],
   });
+
+  app.use(rawBodyMiddleware());
   app.use(helmet());
   app.use(
     compression({

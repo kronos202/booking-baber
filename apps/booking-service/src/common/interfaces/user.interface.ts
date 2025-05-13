@@ -1,10 +1,10 @@
 // src/common/interfaces/user.interface.ts
 
-import { RoleEnum } from '../enums/role.enum';
+import { Role } from 'generated/prisma';
 
 export interface AuthUser {
   id: number;
   sessionId: number;
   hash: string;
-  role: RoleEnum;
+  role: Role;
 }

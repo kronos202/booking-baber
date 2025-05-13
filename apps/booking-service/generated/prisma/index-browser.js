@@ -244,6 +244,17 @@ exports.Prisma.SessionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  booking_id: 'booking_id',
+  payment_id: 'payment_id',
+  message: 'message',
+  status: 'status',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -320,6 +331,11 @@ exports.ImageType = exports.$Enums.ImageType = {
   OTHER: 'OTHER'
 };
 
+exports.NotificationStatus = exports.$Enums.NotificationStatus = {
+  READ: 'READ',
+  UNREAD: 'UNREAD'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   Service: 'Service',
@@ -331,7 +347,8 @@ exports.Prisma.ModelName = {
   Payment: 'Payment',
   ExternalSession: 'ExternalSession',
   Image: 'Image',
-  Session: 'Session'
+  Session: 'Session',
+  Notification: 'Notification'
 };
 
 /**

@@ -20,6 +20,11 @@ enum Provider {
   EMAIL
 }
 
+enum NotificationStatus {
+  READ
+  UNREAD
+}
+
 enum CredentialType {
   GOOGLE
   STRIPE
@@ -83,11 +88,12 @@ model User {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
 
-  sessions    Session[]
-  images      Image[]
-  credentials Credential[] @relation(name: "credential")
-  reviews     Review[]     @relation(name: "reviewer")
-  bookings    Booking[]    @relation(name: "customer")
+  sessions     Session[]
+  images       Image[]
+  credentials  Credential[]   @relation(name: "credential")
+  reviews      Review[]       @relation(name: "reviewer")
+  bookings     Booking[]      @relation(name: "customer")
+  Notification Notification[]
 
   @@map("user")
 }
@@ -163,6 +169,7 @@ model Booking {
   reviews         Review[]
   ExternalSession ExternalSession[]
   Payment         Payment[]
+  Notification    Notification[]
 
   @@index([branch_id, startAt])
   @@index([startAt])
@@ -185,16 +192,17 @@ model Credential {
 }
 
 model Payment {
-  id                Int           @id @default(autoincrement())
-  booking_id        Int           @unique
-  booking           Booking       @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  id                Int            @id @default(autoincrement())
+  booking_id        Int            @unique
+  booking           Booking        @relation(fields: [booking_id], references: [id], onDelete: Cascade)
   payment_method    PaymentMethod // stripe, cash, vnpay
   payment_intent_id String? // ID giao dịch (VD: Stripe PaymentIntent ID, VNPay TxnRef)
   payment_url       String? // URL thanh toán (VD: VNPay checkout URL)
   status            PaymentStatus // pending, succeeded, failed, refunded
-  amount            Decimal       @db.Decimal(10, 2)
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @default(now()) @updatedAt
+  amount            Decimal        @db.Decimal(10, 2)
+  created_at        DateTime       @default(now())
+  updated_at        DateTime       @default(now()) @updatedAt
+  Notification      Notification[]
 
   @@index([booking_id])
   @@map("payment")
@@ -238,4 +246,18 @@ model Session {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("session")
+}
+
+model Notification {
+  id         Int                @id @default(autoincrement())
+  user_id    Int
+  booking_id Int? // Liên kết với Booking (tùy chọn)
+  payment_id Int? // Liên kết với Payment (tùy chọn)
+  message    String
+  status     NotificationStatus @default(UNREAD)
+  created_at DateTime           @default(now())
+  updated_at DateTime           @updatedAt
+  user       User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  booking    Booking?           @relation(fields: [booking_id], references: [id], onDelete: SetNull)
+  payment    Payment?           @relation(fields: [payment_id], references: [id], onDelete: SetNull)
 }

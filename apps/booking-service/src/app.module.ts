@@ -8,6 +8,7 @@ import { SendGridModule } from '@packages/integration';
 import { BullBoardModule } from '@bull-board/nestjs';
 import { ExpressAdapter } from '@bull-board/express';
 import { UploadModule } from './upload/upload.module';
+import { AuthModule } from './domain/auth/auth.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import { UploadModule } from './upload/upload.module';
       adapter: ExpressAdapter,
     }),
     DatabaseModule,
-    // AuthModule,
+    AuthModule,
     UploadModule,
     // ReviewModule,
   ],
