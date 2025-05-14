@@ -1,3 +1,4 @@
+// apps/webhook-service/src/middlewares/raw-body.middleware.ts
 import { Request, Response } from 'express';
 import { json } from 'body-parser';
 
@@ -12,17 +13,12 @@ export function rawBodyMiddleware() {
       response: Response,
       buffer: Buffer,
     ) => {
-      // Kiểm tra buffer hợp lệ
       if (!Buffer.isBuffer(buffer)) {
         console.error('Invalid buffer for raw body:', buffer);
         return;
       }
 
-      // Chỉ lưu raw body cho các endpoint webhook
-      const webhookEndpoints = [
-        '/api/payment/stripe/webhook',
-        '/api/payment/vnpay/callback',
-      ];
+      const webhookEndpoints = ['/webhook/stripe', '/webhook/vnpay'];
       if (webhookEndpoints.includes(request.url) && Buffer.isBuffer(buffer)) {
         request.rawBody = Buffer.from(buffer);
         console.log(

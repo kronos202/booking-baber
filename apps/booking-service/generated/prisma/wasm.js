@@ -130,6 +130,7 @@ exports.Prisma.UserScalarFieldEnum = {
   username: 'username',
   password: 'password',
   phone: 'phone',
+  fcmToken: 'fcmToken',
   bio: 'bio',
   active: 'active',
   provider: 'provider',
@@ -199,6 +200,7 @@ exports.Prisma.CredentialScalarFieldEnum = {
   integration_type: 'integration_type',
   token: 'token',
   sync_token: 'sync_token',
+  refresh_token: 'refresh_token',
   data: 'data',
   created_at: 'created_at',
   updated_at: 'updated_at'
@@ -247,12 +249,22 @@ exports.Prisma.SessionScalarFieldEnum = {
 exports.Prisma.NotificationScalarFieldEnum = {
   id: 'id',
   user_id: 'user_id',
-  booking_id: 'booking_id',
-  payment_id: 'payment_id',
   message: 'message',
   status: 'status',
+  channels: 'channels',
+  delivery_status: 'delivery_status',
   created_at: 'created_at',
   updated_at: 'updated_at'
+};
+
+exports.Prisma.WebhookLogScalarFieldEnum = {
+  id: 'id',
+  provider: 'provider',
+  event: 'event',
+  payload: 'payload',
+  status: 'status',
+  error_message: 'error_message',
+  created_at: 'created_at'
 };
 
 exports.Prisma.SortOrder = {
@@ -348,7 +360,8 @@ exports.Prisma.ModelName = {
   ExternalSession: 'ExternalSession',
   Image: 'Image',
   Session: 'Session',
-  Notification: 'Notification'
+  Notification: 'Notification',
+  WebhookLog: 'WebhookLog'
 };
 
 /**

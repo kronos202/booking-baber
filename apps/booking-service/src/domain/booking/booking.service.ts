@@ -1,104 +1,79 @@
+// booking/booking.service.ts
 import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  Logger,
 } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
-import { DatabaseService } from 'src/database/database.service';
 import { AuthService } from '../auth/auth.service';
 import { PaymentService } from '../payment/payment.service';
 import { NotificationService } from '../notification/notification.service';
+import { CreateNotificationDto } from '../notification/dto/create-notification.dto';
 import { google } from 'googleapis';
+import { DatabaseService } from 'src/database/database.service';
+import * as dayjs from 'dayjs';
+import * as utc from 'dayjs/plugin/utc';
+import * as timezone from 'dayjs/plugin/timezone';
+import { CredentialData } from 'src/types/credential-data';
+
+// Enable Day.js plugins for UTC and timezone
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 @Injectable()
 export class BookingService {
+  private readonly logger = new Logger(BookingService.name);
+  private readonly TIMEZONE = 'Asia/Ho_Chi_Minh';
+
   constructor(
-    protected databaseService: DatabaseService,
-    private authService: AuthService,
-    private paymentService: PaymentService,
-    private notificationService: NotificationService,
+    private readonly databaseService: DatabaseService,
+    private readonly authService: AuthService,
+    private readonly paymentService: PaymentService,
+    private readonly notificationService: NotificationService,
   ) {}
 
-  async createBooking(dto: CreateBookingDto, userId: number) {
+  async create(dto: CreateBookingDto, userId: number) {
+    this.logger.log(
+      `Creating booking for user ${userId}, branch ${dto.branch_id}`,
+    );
+
+    // Validate booking slot
+    const bookingTime = dayjs(dto.booking_time).tz(this.TIMEZONE);
     const conflict = await this.databaseService.booking.findFirst({
       where: {
         branch_id: dto.branch_id,
         stylist_id: dto.stylist_id,
-        startAt: new Date(dto.booking_time),
+        startAt: bookingTime.toDate(),
         status: { not: 'cancelled' },
       },
     });
 
-    if (conflict) throw new BadRequestException('Slot already booked');
+    if (conflict) {
+      this.logger.warn(
+        `Slot conflict detected for booking at ${bookingTime.format('YYYY-MM-DD HH:mm:ss')}`,
+      );
+      throw new BadRequestException('Slot already booked');
+    }
 
+    // Create booking
     const booking = await this.databaseService.booking.create({
       data: {
         branch_id: dto.branch_id,
         stylist_id: dto.stylist_id,
         service_id: dto.service_id,
         customer_id: userId,
-        startAt: new Date(dto.booking_time),
+        startAt: bookingTime.toDate(),
         status: 'pending',
         total_price: dto.total_price,
       },
     });
 
-    const credential = await this.databaseService.credential.findFirst({
-      where: { user_id: userId, integration_type: 'GOOGLE' },
-    });
+    // Sync with Google Calendar
+    await this.syncGoogleCalendar(booking.id, userId, dto, 'create');
 
-    if (credential) {
-      const oauth2Client = new google.auth.OAuth2();
-      oauth2Client.setCredentials({ access_token: credential.token });
-
-      const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-      const event = {
-        summary: `Lịch hẹn: ${dto.service_name}`,
-        location: dto.branch_name,
-        description: `Khách: ${dto.customer_name}, Dịch vụ: ${dto.service_name}`,
-        start: { dateTime: dto.booking_time, timeZone: 'Asia/Ho_Chi_Minh' },
-        end: {
-          dateTime: new Date(
-            new Date(dto.booking_time).getTime() + dto.duration * 60000,
-          ),
-          timeZone: 'Asia/Ho_Chi_Minh',
-        },
-      };
-
-      try {
-        const calendarEvent = await calendar.events.insert({
-          calendarId: credential.data?.calendarId || 'primary',
-          requestBody: event,
-        });
-
-        await this.databaseService.externalSession.create({
-          data: {
-            bookingId: booking.id,
-            calendarType: 'google_calendar',
-            externalSessionId: calendarEvent.data.id,
-          },
-        });
-      } catch (error) {
-        if (error.code === 401) {
-          const newAccessToken =
-            await this.authService.refreshGoogleAccessToken(userId);
-          oauth2Client.setCredentials({ access_token: newAccessToken });
-          const newCalendarEvent = await calendar.events.insert({
-            calendarId: credential.data?.calendarId || 'primary',
-            requestBody: event,
-          });
-          await this.databaseService.externalSession.create({
-            data: {
-              bookingId: booking.id,
-              calendarType: 'google_calendar',
-              externalSessionId: newCalendarEvent.data.id,
-            },
-          });
-        } else throw error;
-      }
-    }
-
+    // Create payment
     const paymentResponse = await this.paymentService.createPaymentIntent(
       booking.id,
       dto.total_price,
@@ -106,182 +81,389 @@ export class BookingService {
       dto.payment_method,
     );
 
-    await this.notificationService.sendNotification(
+    // Send notification
+    const notificationDto: CreateNotificationDto = {
       userId,
-      `Lịch hẹn của bạn đã được đặt: ${dto.service_name} tại ${dto.branch_name}, ${dto.booking_time}`,
-    );
+      message: `Lịch hẹn của bạn đã được đặt: ${dto.service_name} tại ${dto.branch_name}, ${bookingTime.format('DD/MM/YYYY HH:mm')}`,
+      channels: dto.notification_channels || ['email', 'sms', 'push'],
+    };
+    await this.notificationService.sendNotification(notificationDto);
 
+    this.logger.log(`Booking created successfully: ${booking.id}`);
     return { booking, payment: paymentResponse };
   }
 
   async cancelBooking(bookingId: number, userId: number, userRole: string) {
+    this.logger.log(`Cancelling booking ${bookingId} by user ${userId}`);
+
     const booking = await this.databaseService.booking.findUnique({
       where: { id: bookingId },
-      include: { branch: true },
+      include: { branch: true, service: true },
     });
-    if (!booking) throw new BadRequestException('Booking not found');
-    if (userRole === 'customer' && booking.customer_id !== userId)
+    if (!booking) {
+      this.logger.warn(`Booking ${bookingId} not found`);
+      throw new BadRequestException('Booking not found');
+    }
+    if (userRole === 'customer' && booking.customer_id !== userId) {
+      this.logger.warn(
+        `User ${userId} not authorized to cancel booking ${bookingId}`,
+      );
       throw new ForbiddenException('Only the customer can cancel this booking');
-
-    const credential = await this.databaseService.credential.findFirst({
-      where: { user_id: userId, integration_type: 'google_calendar' },
-    });
-
-    if (credential) {
-      const externalSession =
-        await this.databaseService.externalSession.findUnique({
-          where: { bookingId: bookingId },
-        });
-
-      if (
-        externalSession &&
-        externalSession.calendarType === 'google_calendar'
-      ) {
-        const oauth2Client = new google.auth.OAuth2();
-        oauth2Client.setCredentials({ access_token: credential.token });
-        const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-
-        try {
-          await calendar.events.delete({
-            calendarId: credential.data?.calendarId || 'primary',
-            eventId: externalSession.externalSessionId,
-          });
-        } catch (error) {
-          if (error.code === 401) {
-            const newAccessToken =
-              await this.authService.refreshGoogleAccessToken(userId);
-            oauth2Client.setCredentials({ access_token: newAccessToken });
-            await calendar.events.delete({
-              calendarId: credential.data?.calendarId || 'primary',
-              eventId: externalSession.externalSessionId,
-            });
-          } else throw error;
-        }
-
-        await this.databaseService.externalSession.delete({
-          where: { bookingId: bookingId },
-        });
-      }
     }
 
+    // Remove Google Calendar event
+    await this.syncGoogleCalendar(bookingId, userId, null, 'delete');
+
+    // Handle payment refund
     const payment = await this.databaseService.payment.findUnique({
       where: { booking_id: bookingId },
     });
     if (payment) {
       if (
-        payment.payment_method === 'stripe' &&
-        payment.status === 'succeeded'
+        payment.payment_method === 'STRIPE' &&
+        payment.status === 'SUCCEEDED'
       ) {
         await this.paymentService.refundPayment(bookingId);
       } else if (
-        payment.payment_method === 'vnpay' &&
-        payment.status === 'succeeded'
+        payment.payment_method === 'VN_PAY' &&
+        payment.status === 'SUCCEEDED'
       ) {
         await this.databaseService.payment.update({
           where: { booking_id: bookingId },
-          data: { status: 'refunded', updated_at: new Date() },
+          data: { status: 'REFUNDED', updated_at: dayjs().toDate() },
         });
       } else {
         await this.databaseService.payment.update({
           where: { booking_id: bookingId },
-          data: { status: 'cancelled', updated_at: new Date() },
+          data: { status: 'FAILED', updated_at: dayjs().toDate() },
         });
       }
     }
 
+    // Update booking status
     await this.databaseService.booking.update({
       where: { id: bookingId },
       data: { status: 'cancelled' },
     });
 
-    await this.notificationService.sendNotification(
-      booking.customer_id,
-      `Lịch hẹn của bạn tại ${booking.branch.name} đã được hủy.`,
-    );
+    // Send notification
+    const notificationDto: CreateNotificationDto = {
+      userId: booking.customer_id!,
+      message: `Lịch hẹn của bạn tại ${booking.branch.name} đã được hủy.`,
+      channels: ['email', 'sms', 'push'],
+    };
+    await this.notificationService.sendNotification(notificationDto);
 
+    this.logger.log(`Booking ${bookingId} cancelled successfully`);
     return { message: 'Booking cancelled' };
   }
 
   async getAvailability(branchId: number, stylistId: number, date: string) {
+    this.logger.log(
+      `Checking availability for branch ${branchId}, stylist ${stylistId}, date ${date}`,
+    );
+
+    if (!branchId || !stylistId || !date) {
+      throw new BadRequestException('Missing required parameters');
+    }
+
+    const startOfDay = dayjs(date).tz(this.TIMEZONE).startOf('day');
+    const endOfDay = startOfDay.endOf('day');
+
     const bookings = await this.databaseService.booking.findMany({
       where: {
         branch_id: branchId,
         stylist_id: stylistId,
-        booking_time: {
-          gte: new Date(`${date}T00:00:00Z`),
-          lte: new Date(`${date}T23:59:59Z`),
+        startAt: {
+          gte: startOfDay.toDate(),
+          lte: endOfDay.toDate(),
         },
         status: { not: 'cancelled' },
       },
+      select: { startAt: true, service: { select: { duration: true } } },
     });
 
-    const slots = [];
-    const start = new Date(`${date}T08:00:00Z`);
-    const end = new Date(`${date}T20:00:00Z`);
+    // Explicitly define slots as string[] to avoid 'never' type issue
+    const slots: string[] = [];
+    let currentSlot = startOfDay.hour(8); // Start at 8:00 AM
+    const endTime = startOfDay.hour(20); // End at 8:00 PM
 
-    while (start < end) {
-      const isBooked = bookings.some(
-        (b) => b.booking_time.getTime() === start.getTime(),
-      );
-      if (!isBooked) slots.push(start.toISOString());
-      start.setMinutes(start.getMinutes() + 30);
+    while (currentSlot.isBefore(endTime)) {
+      const slotTime = currentSlot;
+      const isBooked = bookings.some((b) => {
+        const bookingStart = dayjs(b.startAt).tz(this.TIMEZONE);
+        const bookingEnd = bookingStart.add(b.service.duration, 'minute');
+        // Replace isSameOrAfter with isSame || isAfter
+        return (
+          (slotTime.isSame(bookingStart) || slotTime.isAfter(bookingStart)) &&
+          slotTime.isBefore(bookingEnd)
+        );
+      });
+
+      if (!isBooked) {
+        slots.push(slotTime.toISOString());
+      }
+      currentSlot = currentSlot.add(30, 'minute');
     }
 
+    this.logger.log(`Found ${slots.length} available slots`);
     return slots;
   }
 
   async getBranchBookings(branchId: number, userRole: string) {
-    if (userRole !== 'admin' && userRole !== 'branch_manager')
+    this.logger.log(`Fetching bookings for branch ${branchId}`);
+
+    if (userRole !== 'admin' && userRole !== 'branch_manager') {
+      this.logger.warn(
+        `User role ${userRole} not authorized to view branch bookings`,
+      );
       throw new ForbiddenException(
         'Only admins and branch managers can view branch bookings',
       );
-    return this.databaseService.booking.findMany({
+    }
+
+    const bookings = await this.databaseService.booking.findMany({
       where: { branch_id: branchId },
-      include: { service: true, stylist: true, customer: true, payments: true },
+      include: { service: true, stylist: true, customer: true, Payment: true },
     });
+
+    this.logger.log(
+      `Fetched ${bookings.length} bookings for branch ${branchId}`,
+    );
+    return bookings;
   }
 
   async getUserBookings(userId: number) {
-    return this.databaseService.booking.findMany({
+    this.logger.log(`Fetching bookings for user ${userId}`);
+
+    const bookings = await this.databaseService.booking.findMany({
       where: { customer_id: userId },
-      include: { service: true, stylist: true, payments: true },
+      include: { service: true, stylist: true, Payment: true },
     });
+
+    this.logger.log(`Fetched ${bookings.length} bookings for user ${userId}`);
+    return bookings;
   }
 
-  async updateBooking(id: number, dto: UpdateBookingDto, userRole: string) {
-    if (userRole !== 'admin' && userRole !== 'branch_manager')
+  async findOne(id: number, userId: number, userRole: string) {
+    this.logger.log(`Fetching booking ${id} for user ${userId}`);
+
+    const booking = await this.databaseService.booking.findUnique({
+      where: { id },
+      include: { service: true, stylist: true, branch: true, Payment: true },
+    });
+
+    if (!booking) {
+      this.logger.warn(`Booking ${id} not found`);
+      throw new BadRequestException('Booking not found');
+    }
+
+    if (
+      booking.customer_id !== userId &&
+      userRole !== 'admin' &&
+      userRole !== 'branch_manager'
+    ) {
+      this.logger.warn(`User ${userId} not authorized to view booking ${id}`);
+      throw new ForbiddenException(
+        'You are not authorized to view this booking',
+      );
+    }
+
+    return booking;
+  }
+
+  async update(
+    id: number,
+    dto: UpdateBookingDto,
+    userId: number,
+    userRole: string,
+  ) {
+    this.logger.log(`Updating booking ${id} by user ${userId}`);
+
+    if (userRole !== 'admin' && userRole !== 'branch_manager') {
+      this.logger.warn(
+        `User role ${userRole} not authorized to update booking`,
+      );
       throw new ForbiddenException(
         'Only admins and branch managers can update bookings',
       );
+    }
+
     const booking = await this.databaseService.booking.findUnique({
       where: { id },
       include: { branch: true, service: true },
     });
-    if (!booking) throw new BadRequestException('Booking not found');
-    if (dto.status === 'completed' && booking.status !== 'confirmed')
+    if (!booking) {
+      this.logger.warn(`Booking ${id} not found`);
+      throw new BadRequestException('Booking not found');
+    }
+
+    if (dto.status === 'completed' && booking.status !== 'confirmed') {
+      this.logger.warn(`Booking ${id} must be confirmed to complete`);
       throw new BadRequestException('Booking must be confirmed to complete');
+    }
+
+    // Update Google Calendar if startAt changes
+    if (dto.startAt) {
+      await this.syncGoogleCalendar(
+        id,
+        booking.customer_id!,
+        { booking_time: dto.startAt, duration: booking.service.duration },
+        'update',
+      );
+    }
 
     await this.databaseService.booking.update({
       where: { id },
-      data: { status: dto.status },
+      data: {
+        status: dto.status,
+        startAt: dto.startAt
+          ? dayjs(dto.startAt).tz(this.TIMEZONE).toDate()
+          : undefined,
+      },
     });
 
     if (dto.status === 'completed') {
       const payment = await this.databaseService.payment.findUnique({
         where: { booking_id: id },
       });
-      if (payment && payment.payment_method === 'cash') {
+      if (payment && payment.payment_method === 'CASH') {
         await this.databaseService.payment.update({
           where: { booking_id: id },
-          data: { status: 'succeeded', updated_at: new Date() },
+          data: { status: 'SUCCEEDED', updated_at: dayjs().toDate() },
         });
       }
-      await this.notificationService.sendNotification(
-        booking.customer_id,
-        `Lịch hẹn của bạn (${booking.service.name}) tại ${booking.branch.name} đã hoàn thành. Vui lòng để lại đánh giá!`,
-      );
+      const notificationDto: CreateNotificationDto = {
+        userId: booking.customer_id!,
+        message: `Lịch hẹn của bạn (${booking.service.name}) tại ${booking.branch.name} đã hoàn thành. Vui lòng để lại đánh giá!`,
+        channels: ['email', 'sms', 'push'],
+      };
+      await this.notificationService.sendNotification(notificationDto);
     }
 
+    this.logger.log(`Booking ${id} updated successfully`);
     return { message: 'Booking updated' };
+  }
+
+  private async syncGoogleCalendar(
+    bookingId: number,
+    userId: number,
+    dto: Partial<CreateBookingDto> | null,
+    action: 'create' | 'update' | 'delete',
+  ) {
+    this.logger.log(
+      `Đồng bộ Google Calendar cho booking ${bookingId}, hành động: ${action}`,
+    );
+
+    const credential = await this.databaseService.credential.findFirst({
+      where: { user_id: userId, integration_type: 'GOOGLE' },
+    });
+
+    if (!credential) {
+      this.logger.debug(
+        `Không tìm thấy thông tin Google Calendar cho người dùng ${userId}`,
+      );
+      return;
+    }
+
+    const oauth2Client = new google.auth.OAuth2();
+    oauth2Client.setCredentials({ access_token: credential.token });
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+
+    try {
+      if (action === 'create' && dto) {
+        const bookingTime = dayjs(dto.booking_time).tz(this.TIMEZONE);
+        const event = {
+          summary: `Lịch hẹn: ${dto.service_name}`,
+          location: dto.branch_name,
+          description: `Khách: ${dto.customer_name}, Dịch vụ: ${dto.service_name}`,
+          start: {
+            dateTime: bookingTime.toISOString(),
+            timeZone: this.TIMEZONE,
+          },
+          end: {
+            dateTime: bookingTime.add(dto.duration!, 'minute').toISOString(),
+            timeZone: this.TIMEZONE,
+          },
+        };
+
+        // Ép kiểu credential.data thành CredentialData
+        const data = credential.data as CredentialData | null;
+        const calendarEvent = await calendar.events.insert({
+          calendarId: data?.calendarId || 'primary',
+          requestBody: event,
+        });
+
+        await this.databaseService.externalSession.create({
+          data: {
+            bookingId,
+            calendarType: 'GOOGLE_CALENDAR',
+            externalSessionId: calendarEvent.data.id!,
+          },
+        });
+      } else if (action === 'update' && dto) {
+        const externalSession =
+          await this.databaseService.externalSession.findUnique({
+            where: { bookingId },
+          });
+
+        if (
+          externalSession &&
+          externalSession.calendarType === 'GOOGLE_CALENDAR'
+        ) {
+          const bookingTime = dayjs(dto.booking_time).tz(this.TIMEZONE);
+          const data = credential.data as CredentialData | null;
+          await calendar.events.patch({
+            calendarId: data?.calendarId || 'primary',
+            eventId: externalSession.externalSessionId,
+            requestBody: {
+              start: {
+                dateTime: bookingTime.toISOString(),
+                timeZone: this.TIMEZONE,
+              },
+              end: {
+                dateTime: bookingTime
+                  .add(dto.duration || 30, 'minute')
+                  .toISOString(),
+                timeZone: this.TIMEZONE,
+              },
+            },
+          });
+        }
+      } else if (action === 'delete') {
+        const externalSession =
+          await this.databaseService.externalSession.findUnique({
+            where: { bookingId },
+          });
+
+        if (
+          externalSession &&
+          externalSession.calendarType === 'GOOGLE_CALENDAR'
+        ) {
+          const data = credential.data as CredentialData | null;
+          await calendar.events.delete({
+            calendarId: data?.calendarId || 'primary',
+            eventId: externalSession.externalSessionId,
+          });
+          await this.databaseService.externalSession.delete({
+            where: { bookingId },
+          });
+        }
+      }
+    } catch (error) {
+      if (error.code === 401) {
+        this.logger.warn(
+          `Token Google Calendar hết hạn cho người dùng ${userId}`,
+        );
+        const newAccessToken =
+          await this.authService.refreshGoogleAccessToken(userId);
+        oauth2Client.setCredentials({ access_token: newAccessToken });
+        // Thử lại thao tác
+        await this.syncGoogleCalendar(bookingId, userId, dto, action);
+      } else {
+        this.logger.error(`Đồng bộ Google Calendar thất bại: ${error.message}`);
+        throw error;
+      }
+    }
   }
 }

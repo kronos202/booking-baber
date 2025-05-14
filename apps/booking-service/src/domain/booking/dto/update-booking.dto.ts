@@ -1,6 +1,11 @@
-import { IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsDateString } from 'class-validator';
 
 export class UpdateBookingDto {
-  @IsString()
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  @IsEnum(['pending', 'confirmed', 'completed', 'cancelled'])
+  @IsOptional()
+  status?: string;
+
+  @IsDateString()
+  @IsOptional()
+  startAt?: string;
 }

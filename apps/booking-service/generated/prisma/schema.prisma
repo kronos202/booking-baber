@@ -76,6 +76,7 @@ model User {
   username  String    @unique @db.VarChar(50)
   password  String?   @db.VarChar(255)
   phone     String    @unique
+  fcmToken  String?
   bio       String?   @db.Text
   active    Boolean   @default(false)
   provider  Provider? @default(EMAIL)
@@ -169,7 +170,6 @@ model Booking {
   reviews         Review[]
   ExternalSession ExternalSession[]
   Payment         Payment[]
-  Notification    Notification[]
 
   @@index([branch_id, startAt])
   @@index([startAt])
@@ -182,6 +182,7 @@ model Credential {
   integration_type CredentialType // google_calendar, stripe, zalo
   token            String // Access token
   sync_token       String? // Refresh token hoặc sync token
+  refresh_token    String? // Refresh token hoặc sync token
   data             Json // Dữ liệu bổ sung (VD: calendarId)
   created_at       DateTime       @default(now())
   updated_at       DateTime       @default(now()) @updatedAt
@@ -192,17 +193,16 @@ model Credential {
 }
 
 model Payment {
-  id                Int            @id @default(autoincrement())
-  booking_id        Int            @unique
-  booking           Booking        @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  id                Int           @id @default(autoincrement())
+  booking_id        Int           @unique
+  booking           Booking       @relation(fields: [booking_id], references: [id], onDelete: Cascade)
   payment_method    PaymentMethod // stripe, cash, vnpay
   payment_intent_id String? // ID giao dịch (VD: Stripe PaymentIntent ID, VNPay TxnRef)
   payment_url       String? // URL thanh toán (VD: VNPay checkout URL)
   status            PaymentStatus // pending, succeeded, failed, refunded
-  amount            Decimal        @db.Decimal(10, 2)
-  created_at        DateTime       @default(now())
-  updated_at        DateTime       @default(now()) @updatedAt
-  Notification      Notification[]
+  amount            Decimal       @db.Decimal(10, 2)
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @default(now()) @updatedAt
 
   @@index([booking_id])
   @@map("payment")
@@ -249,15 +249,23 @@ model Session {
 }
 
 model Notification {
-  id         Int                @id @default(autoincrement())
-  user_id    Int
-  booking_id Int? // Liên kết với Booking (tùy chọn)
-  payment_id Int? // Liên kết với Payment (tùy chọn)
-  message    String
-  status     NotificationStatus @default(UNREAD)
-  created_at DateTime           @default(now())
-  updated_at DateTime           @updatedAt
-  user       User               @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  booking    Booking?           @relation(fields: [booking_id], references: [id], onDelete: SetNull)
-  payment    Payment?           @relation(fields: [payment_id], references: [id], onDelete: SetNull)
+  id              Int                @id @default(autoincrement())
+  user_id         Int
+  message         String
+  status          NotificationStatus @default(UNREAD)
+  channels        String? // e.g., "email,sms,push"
+  delivery_status String? // e.g., FAILED_EMAIL, FAILED_SMS
+  created_at      DateTime           @default(now())
+  updated_at      DateTime           @updatedAt
+  user            User               @relation(fields: [user_id], references: [id])
+}
+
+model WebhookLog {
+  id            Int      @id @default(autoincrement())
+  provider      String // stripe, vnpay, twilio
+  event         String // e.g., payment_intent.succeeded
+  payload       Json // Dữ liệu webhook
+  status        String // success, failed
+  error_message String? // Lỗi nếu có
+  created_at    DateTime @default(now())
 }

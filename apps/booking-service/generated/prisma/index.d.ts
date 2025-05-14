@@ -73,6 +73,11 @@ export type Session = $Result.DefaultSelection<Prisma.$SessionPayload>
  * 
  */
 export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
+/**
+ * Model WebhookLog
+ * 
+ */
+export type WebhookLog = $Result.DefaultSelection<Prisma.$WebhookLogPayload>
 
 /**
  * Enums
@@ -438,6 +443,16 @@ export class PrismaClient<
     * ```
     */
   get notification(): Prisma.NotificationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.webhookLog`: Exposes CRUD operations for the **WebhookLog** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more WebhookLogs
+    * const webhookLogs = await prisma.webhookLog.findMany()
+    * ```
+    */
+  get webhookLog(): Prisma.WebhookLogDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -889,7 +904,8 @@ export namespace Prisma {
     ExternalSession: 'ExternalSession',
     Image: 'Image',
     Session: 'Session',
-    Notification: 'Notification'
+    Notification: 'Notification',
+    WebhookLog: 'WebhookLog'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -908,7 +924,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "service" | "review" | "branch" | "stylist" | "booking" | "credential" | "payment" | "externalSession" | "image" | "session" | "notification"
+      modelProps: "user" | "service" | "review" | "branch" | "stylist" | "booking" | "credential" | "payment" | "externalSession" | "image" | "session" | "notification" | "webhookLog"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1800,6 +1816,80 @@ export namespace Prisma {
           }
         }
       }
+      WebhookLog: {
+        payload: Prisma.$WebhookLogPayload<ExtArgs>
+        fields: Prisma.WebhookLogFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WebhookLogFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WebhookLogFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          findFirst: {
+            args: Prisma.WebhookLogFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WebhookLogFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          findMany: {
+            args: Prisma.WebhookLogFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>[]
+          }
+          create: {
+            args: Prisma.WebhookLogCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          createMany: {
+            args: Prisma.WebhookLogCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WebhookLogCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>[]
+          }
+          delete: {
+            args: Prisma.WebhookLogDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          update: {
+            args: Prisma.WebhookLogUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          deleteMany: {
+            args: Prisma.WebhookLogDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WebhookLogUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WebhookLogUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>[]
+          }
+          upsert: {
+            args: Prisma.WebhookLogUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WebhookLogPayload>
+          }
+          aggregate: {
+            args: Prisma.WebhookLogAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWebhookLog>
+          }
+          groupBy: {
+            args: Prisma.WebhookLogGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WebhookLogGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WebhookLogCountArgs<ExtArgs>
+            result: $Utils.Optional<WebhookLogCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1896,6 +1986,7 @@ export namespace Prisma {
     image?: ImageOmit
     session?: SessionOmit
     notification?: NotificationOmit
+    webhookLog?: WebhookLogOmit
   }
 
   /* Types for Logging */
@@ -2189,14 +2280,12 @@ export namespace Prisma {
     reviews: number
     ExternalSession: number
     Payment: number
-    Notification: number
   }
 
   export type BookingCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     reviews?: boolean | BookingCountOutputTypeCountReviewsArgs
     ExternalSession?: boolean | BookingCountOutputTypeCountExternalSessionArgs
     Payment?: boolean | BookingCountOutputTypeCountPaymentArgs
-    Notification?: boolean | BookingCountOutputTypeCountNotificationArgs
   }
 
   // Custom InputTypes
@@ -2229,44 +2318,6 @@ export namespace Prisma {
    */
   export type BookingCountOutputTypeCountPaymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: PaymentWhereInput
-  }
-
-  /**
-   * BookingCountOutputType without action
-   */
-  export type BookingCountOutputTypeCountNotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
-  }
-
-
-  /**
-   * Count Type PaymentCountOutputType
-   */
-
-  export type PaymentCountOutputType = {
-    Notification: number
-  }
-
-  export type PaymentCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    Notification?: boolean | PaymentCountOutputTypeCountNotificationArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * PaymentCountOutputType without action
-   */
-  export type PaymentCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the PaymentCountOutputType
-     */
-    select?: PaymentCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * PaymentCountOutputType without action
-   */
-  export type PaymentCountOutputTypeCountNotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: NotificationWhereInput
   }
 
 
@@ -2304,6 +2355,7 @@ export namespace Prisma {
     username: string | null
     password: string | null
     phone: string | null
+    fcmToken: string | null
     bio: string | null
     active: boolean | null
     provider: $Enums.Provider | null
@@ -2325,6 +2377,7 @@ export namespace Prisma {
     username: string | null
     password: string | null
     phone: string | null
+    fcmToken: string | null
     bio: string | null
     active: boolean | null
     provider: $Enums.Provider | null
@@ -2346,6 +2399,7 @@ export namespace Prisma {
     username: number
     password: number
     phone: number
+    fcmToken: number
     bio: number
     active: number
     provider: number
@@ -2377,6 +2431,7 @@ export namespace Prisma {
     username?: true
     password?: true
     phone?: true
+    fcmToken?: true
     bio?: true
     active?: true
     provider?: true
@@ -2398,6 +2453,7 @@ export namespace Prisma {
     username?: true
     password?: true
     phone?: true
+    fcmToken?: true
     bio?: true
     active?: true
     provider?: true
@@ -2419,6 +2475,7 @@ export namespace Prisma {
     username?: true
     password?: true
     phone?: true
+    fcmToken?: true
     bio?: true
     active?: true
     provider?: true
@@ -2527,6 +2584,7 @@ export namespace Prisma {
     username: string
     password: string | null
     phone: string
+    fcmToken: string | null
     bio: string | null
     active: boolean
     provider: $Enums.Provider | null
@@ -2567,6 +2625,7 @@ export namespace Prisma {
     username?: boolean
     password?: boolean
     phone?: boolean
+    fcmToken?: boolean
     bio?: boolean
     active?: boolean
     provider?: boolean
@@ -2595,6 +2654,7 @@ export namespace Prisma {
     username?: boolean
     password?: boolean
     phone?: boolean
+    fcmToken?: boolean
     bio?: boolean
     active?: boolean
     provider?: boolean
@@ -2616,6 +2676,7 @@ export namespace Prisma {
     username?: boolean
     password?: boolean
     phone?: boolean
+    fcmToken?: boolean
     bio?: boolean
     active?: boolean
     provider?: boolean
@@ -2637,6 +2698,7 @@ export namespace Prisma {
     username?: boolean
     password?: boolean
     phone?: boolean
+    fcmToken?: boolean
     bio?: boolean
     active?: boolean
     provider?: boolean
@@ -2648,7 +2710,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "firstName" | "lastName" | "zalo_id" | "role" | "username" | "password" | "phone" | "bio" | "active" | "provider" | "socialId" | "avatar" | "deletedAt" | "lastLogin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "email" | "firstName" | "lastName" | "zalo_id" | "role" | "username" | "password" | "phone" | "fcmToken" | "bio" | "active" | "provider" | "socialId" | "avatar" | "deletedAt" | "lastLogin" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     sessions?: boolean | User$sessionsArgs<ExtArgs>
     images?: boolean | User$imagesArgs<ExtArgs>
@@ -2681,6 +2743,7 @@ export namespace Prisma {
       username: string
       password: string | null
       phone: string
+      fcmToken: string | null
       bio: string | null
       active: boolean
       provider: $Enums.Provider | null
@@ -3128,6 +3191,7 @@ export namespace Prisma {
     readonly username: FieldRef<"User", 'String'>
     readonly password: FieldRef<"User", 'String'>
     readonly phone: FieldRef<"User", 'String'>
+    readonly fcmToken: FieldRef<"User", 'String'>
     readonly bio: FieldRef<"User", 'String'>
     readonly active: FieldRef<"User", 'Boolean'>
     readonly provider: FieldRef<"User", 'Provider'>
@@ -8620,7 +8684,6 @@ export namespace Prisma {
     reviews?: boolean | Booking$reviewsArgs<ExtArgs>
     ExternalSession?: boolean | Booking$ExternalSessionArgs<ExtArgs>
     Payment?: boolean | Booking$PaymentArgs<ExtArgs>
-    Notification?: boolean | Booking$NotificationArgs<ExtArgs>
     _count?: boolean | BookingCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["booking"]>
 
@@ -8677,7 +8740,6 @@ export namespace Prisma {
     reviews?: boolean | Booking$reviewsArgs<ExtArgs>
     ExternalSession?: boolean | Booking$ExternalSessionArgs<ExtArgs>
     Payment?: boolean | Booking$PaymentArgs<ExtArgs>
-    Notification?: boolean | Booking$NotificationArgs<ExtArgs>
     _count?: boolean | BookingCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BookingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -8703,7 +8765,6 @@ export namespace Prisma {
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
       ExternalSession: Prisma.$ExternalSessionPayload<ExtArgs>[]
       Payment: Prisma.$PaymentPayload<ExtArgs>[]
-      Notification: Prisma.$NotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -9116,7 +9177,6 @@ export namespace Prisma {
     reviews<T extends Booking$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, Booking$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ExternalSession<T extends Booking$ExternalSessionArgs<ExtArgs> = {}>(args?: Subset<T, Booking$ExternalSessionArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExternalSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     Payment<T extends Booking$PaymentArgs<ExtArgs> = {}>(args?: Subset<T, Booking$PaymentArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    Notification<T extends Booking$NotificationArgs<ExtArgs> = {}>(args?: Subset<T, Booking$NotificationArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9661,30 +9721,6 @@ export namespace Prisma {
   }
 
   /**
-   * Booking.Notification
-   */
-  export type Booking$NotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    cursor?: NotificationWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
-  }
-
-  /**
    * Booking without action
    */
   export type BookingDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9731,6 +9767,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType | null
     token: string | null
     sync_token: string | null
+    refresh_token: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -9741,6 +9778,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType | null
     token: string | null
     sync_token: string | null
+    refresh_token: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -9751,6 +9789,7 @@ export namespace Prisma {
     integration_type: number
     token: number
     sync_token: number
+    refresh_token: number
     data: number
     created_at: number
     updated_at: number
@@ -9774,6 +9813,7 @@ export namespace Prisma {
     integration_type?: true
     token?: true
     sync_token?: true
+    refresh_token?: true
     created_at?: true
     updated_at?: true
   }
@@ -9784,6 +9824,7 @@ export namespace Prisma {
     integration_type?: true
     token?: true
     sync_token?: true
+    refresh_token?: true
     created_at?: true
     updated_at?: true
   }
@@ -9794,6 +9835,7 @@ export namespace Prisma {
     integration_type?: true
     token?: true
     sync_token?: true
+    refresh_token?: true
     data?: true
     created_at?: true
     updated_at?: true
@@ -9892,6 +9934,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token: string | null
+    refresh_token: string | null
     data: JsonValue
     created_at: Date
     updated_at: Date
@@ -9922,6 +9965,7 @@ export namespace Prisma {
     integration_type?: boolean
     token?: boolean
     sync_token?: boolean
+    refresh_token?: boolean
     data?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -9934,6 +9978,7 @@ export namespace Prisma {
     integration_type?: boolean
     token?: boolean
     sync_token?: boolean
+    refresh_token?: boolean
     data?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -9946,6 +9991,7 @@ export namespace Prisma {
     integration_type?: boolean
     token?: boolean
     sync_token?: boolean
+    refresh_token?: boolean
     data?: boolean
     created_at?: boolean
     updated_at?: boolean
@@ -9958,12 +10004,13 @@ export namespace Prisma {
     integration_type?: boolean
     token?: boolean
     sync_token?: boolean
+    refresh_token?: boolean
     data?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type CredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "integration_type" | "token" | "sync_token" | "data" | "created_at" | "updated_at", ExtArgs["result"]["credential"]>
+  export type CredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "integration_type" | "token" | "sync_token" | "refresh_token" | "data" | "created_at" | "updated_at", ExtArgs["result"]["credential"]>
   export type CredentialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -9985,6 +10032,7 @@ export namespace Prisma {
       integration_type: $Enums.CredentialType
       token: string
       sync_token: string | null
+      refresh_token: string | null
       data: Prisma.JsonValue
       created_at: Date
       updated_at: Date
@@ -10417,6 +10465,7 @@ export namespace Prisma {
     readonly integration_type: FieldRef<"Credential", 'CredentialType'>
     readonly token: FieldRef<"Credential", 'String'>
     readonly sync_token: FieldRef<"Credential", 'String'>
+    readonly refresh_token: FieldRef<"Credential", 'String'>
     readonly data: FieldRef<"Credential", 'Json'>
     readonly created_at: FieldRef<"Credential", 'DateTime'>
     readonly updated_at: FieldRef<"Credential", 'DateTime'>
@@ -11073,8 +11122,6 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     booking?: boolean | BookingDefaultArgs<ExtArgs>
-    Notification?: boolean | Payment$NotificationArgs<ExtArgs>
-    _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["payment"]>
 
   export type PaymentSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11118,8 +11165,6 @@ export namespace Prisma {
   export type PaymentOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "booking_id" | "payment_method" | "payment_intent_id" | "payment_url" | "status" | "amount" | "created_at" | "updated_at", ExtArgs["result"]["payment"]>
   export type PaymentInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | BookingDefaultArgs<ExtArgs>
-    Notification?: boolean | Payment$NotificationArgs<ExtArgs>
-    _count?: boolean | PaymentCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PaymentIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     booking?: boolean | BookingDefaultArgs<ExtArgs>
@@ -11132,7 +11177,6 @@ export namespace Prisma {
     name: "Payment"
     objects: {
       booking: Prisma.$BookingPayload<ExtArgs>
-      Notification: Prisma.$NotificationPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
@@ -11539,7 +11583,6 @@ export namespace Prisma {
   export interface Prisma__PaymentClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     booking<T extends BookingDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BookingDefaultArgs<ExtArgs>>): Prisma__BookingClient<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    Notification<T extends Payment$NotificationArgs<ExtArgs> = {}>(args?: Subset<T, Payment$NotificationArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -11971,30 +12014,6 @@ export namespace Prisma {
      * Limit how many Payments to delete.
      */
     limit?: number
-  }
-
-  /**
-   * Payment.Notification
-   */
-  export type Payment$NotificationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Notification
-     */
-    select?: NotificationSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Notification
-     */
-    omit?: NotificationOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: NotificationInclude<ExtArgs> | null
-    where?: NotificationWhereInput
-    orderBy?: NotificationOrderByWithRelationInput | NotificationOrderByWithRelationInput[]
-    cursor?: NotificationWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: NotificationScalarFieldEnum | NotificationScalarFieldEnum[]
   }
 
   /**
@@ -15367,24 +15386,20 @@ export namespace Prisma {
   export type NotificationAvgAggregateOutputType = {
     id: number | null
     user_id: number | null
-    booking_id: number | null
-    payment_id: number | null
   }
 
   export type NotificationSumAggregateOutputType = {
     id: number | null
     user_id: number | null
-    booking_id: number | null
-    payment_id: number | null
   }
 
   export type NotificationMinAggregateOutputType = {
     id: number | null
     user_id: number | null
-    booking_id: number | null
-    payment_id: number | null
     message: string | null
     status: $Enums.NotificationStatus | null
+    channels: string | null
+    delivery_status: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -15392,10 +15407,10 @@ export namespace Prisma {
   export type NotificationMaxAggregateOutputType = {
     id: number | null
     user_id: number | null
-    booking_id: number | null
-    payment_id: number | null
     message: string | null
     status: $Enums.NotificationStatus | null
+    channels: string | null
+    delivery_status: string | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -15403,10 +15418,10 @@ export namespace Prisma {
   export type NotificationCountAggregateOutputType = {
     id: number
     user_id: number
-    booking_id: number
-    payment_id: number
     message: number
     status: number
+    channels: number
+    delivery_status: number
     created_at: number
     updated_at: number
     _all: number
@@ -15416,24 +15431,20 @@ export namespace Prisma {
   export type NotificationAvgAggregateInputType = {
     id?: true
     user_id?: true
-    booking_id?: true
-    payment_id?: true
   }
 
   export type NotificationSumAggregateInputType = {
     id?: true
     user_id?: true
-    booking_id?: true
-    payment_id?: true
   }
 
   export type NotificationMinAggregateInputType = {
     id?: true
     user_id?: true
-    booking_id?: true
-    payment_id?: true
     message?: true
     status?: true
+    channels?: true
+    delivery_status?: true
     created_at?: true
     updated_at?: true
   }
@@ -15441,10 +15452,10 @@ export namespace Prisma {
   export type NotificationMaxAggregateInputType = {
     id?: true
     user_id?: true
-    booking_id?: true
-    payment_id?: true
     message?: true
     status?: true
+    channels?: true
+    delivery_status?: true
     created_at?: true
     updated_at?: true
   }
@@ -15452,10 +15463,10 @@ export namespace Prisma {
   export type NotificationCountAggregateInputType = {
     id?: true
     user_id?: true
-    booking_id?: true
-    payment_id?: true
     message?: true
     status?: true
+    channels?: true
+    delivery_status?: true
     created_at?: true
     updated_at?: true
     _all?: true
@@ -15550,10 +15561,10 @@ export namespace Prisma {
   export type NotificationGroupByOutputType = {
     id: number
     user_id: number
-    booking_id: number | null
-    payment_id: number | null
     message: string
     status: $Enums.NotificationStatus
+    channels: string | null
+    delivery_status: string | null
     created_at: Date
     updated_at: Date
     _count: NotificationCountAggregateOutputType | null
@@ -15580,87 +15591,73 @@ export namespace Prisma {
   export type NotificationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
-    booking_id?: boolean
-    payment_id?: boolean
     message?: boolean
     status?: boolean
+    channels?: boolean
+    delivery_status?: boolean
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    booking?: boolean | Notification$bookingArgs<ExtArgs>
-    payment?: boolean | Notification$paymentArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
-    booking_id?: boolean
-    payment_id?: boolean
     message?: boolean
     status?: boolean
+    channels?: boolean
+    delivery_status?: boolean
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    booking?: boolean | Notification$bookingArgs<ExtArgs>
-    payment?: boolean | Notification$paymentArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     user_id?: boolean
-    booking_id?: boolean
-    payment_id?: boolean
     message?: boolean
     status?: boolean
+    channels?: boolean
+    delivery_status?: boolean
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    booking?: boolean | Notification$bookingArgs<ExtArgs>
-    payment?: boolean | Notification$paymentArgs<ExtArgs>
   }, ExtArgs["result"]["notification"]>
 
   export type NotificationSelectScalar = {
     id?: boolean
     user_id?: boolean
-    booking_id?: boolean
-    payment_id?: boolean
     message?: boolean
     status?: boolean
+    channels?: boolean
+    delivery_status?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "booking_id" | "payment_id" | "message" | "status" | "created_at" | "updated_at", ExtArgs["result"]["notification"]>
+  export type NotificationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "message" | "status" | "channels" | "delivery_status" | "created_at" | "updated_at", ExtArgs["result"]["notification"]>
   export type NotificationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    booking?: boolean | Notification$bookingArgs<ExtArgs>
-    payment?: boolean | Notification$paymentArgs<ExtArgs>
   }
   export type NotificationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    booking?: boolean | Notification$bookingArgs<ExtArgs>
-    payment?: boolean | Notification$paymentArgs<ExtArgs>
   }
   export type NotificationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    booking?: boolean | Notification$bookingArgs<ExtArgs>
-    payment?: boolean | Notification$paymentArgs<ExtArgs>
   }
 
   export type $NotificationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Notification"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
-      booking: Prisma.$BookingPayload<ExtArgs> | null
-      payment: Prisma.$PaymentPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       user_id: number
-      booking_id: number | null
-      payment_id: number | null
       message: string
       status: $Enums.NotificationStatus
+      channels: string | null
+      delivery_status: string | null
       created_at: Date
       updated_at: Date
     }, ExtArgs["result"]["notification"]>
@@ -16058,8 +16055,6 @@ export namespace Prisma {
   export interface Prisma__NotificationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    booking<T extends Notification$bookingArgs<ExtArgs> = {}>(args?: Subset<T, Notification$bookingArgs<ExtArgs>>): Prisma__BookingClient<$Result.GetResult<Prisma.$BookingPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    payment<T extends Notification$paymentArgs<ExtArgs> = {}>(args?: Subset<T, Notification$paymentArgs<ExtArgs>>): Prisma__PaymentClient<$Result.GetResult<Prisma.$PaymentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -16091,10 +16086,10 @@ export namespace Prisma {
   interface NotificationFieldRefs {
     readonly id: FieldRef<"Notification", 'Int'>
     readonly user_id: FieldRef<"Notification", 'Int'>
-    readonly booking_id: FieldRef<"Notification", 'Int'>
-    readonly payment_id: FieldRef<"Notification", 'Int'>
     readonly message: FieldRef<"Notification", 'String'>
     readonly status: FieldRef<"Notification", 'NotificationStatus'>
+    readonly channels: FieldRef<"Notification", 'String'>
+    readonly delivery_status: FieldRef<"Notification", 'String'>
     readonly created_at: FieldRef<"Notification", 'DateTime'>
     readonly updated_at: FieldRef<"Notification", 'DateTime'>
   }
@@ -16493,44 +16488,6 @@ export namespace Prisma {
   }
 
   /**
-   * Notification.booking
-   */
-  export type Notification$bookingArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Booking
-     */
-    select?: BookingSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Booking
-     */
-    omit?: BookingOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BookingInclude<ExtArgs> | null
-    where?: BookingWhereInput
-  }
-
-  /**
-   * Notification.payment
-   */
-  export type Notification$paymentArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Payment
-     */
-    select?: PaymentSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Payment
-     */
-    omit?: PaymentOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: PaymentInclude<ExtArgs> | null
-    where?: PaymentWhereInput
-  }
-
-  /**
    * Notification without action
    */
   export type NotificationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -16546,6 +16503,1057 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: NotificationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model WebhookLog
+   */
+
+  export type AggregateWebhookLog = {
+    _count: WebhookLogCountAggregateOutputType | null
+    _avg: WebhookLogAvgAggregateOutputType | null
+    _sum: WebhookLogSumAggregateOutputType | null
+    _min: WebhookLogMinAggregateOutputType | null
+    _max: WebhookLogMaxAggregateOutputType | null
+  }
+
+  export type WebhookLogAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type WebhookLogSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type WebhookLogMinAggregateOutputType = {
+    id: number | null
+    provider: string | null
+    event: string | null
+    status: string | null
+    error_message: string | null
+    created_at: Date | null
+  }
+
+  export type WebhookLogMaxAggregateOutputType = {
+    id: number | null
+    provider: string | null
+    event: string | null
+    status: string | null
+    error_message: string | null
+    created_at: Date | null
+  }
+
+  export type WebhookLogCountAggregateOutputType = {
+    id: number
+    provider: number
+    event: number
+    payload: number
+    status: number
+    error_message: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type WebhookLogAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type WebhookLogSumAggregateInputType = {
+    id?: true
+  }
+
+  export type WebhookLogMinAggregateInputType = {
+    id?: true
+    provider?: true
+    event?: true
+    status?: true
+    error_message?: true
+    created_at?: true
+  }
+
+  export type WebhookLogMaxAggregateInputType = {
+    id?: true
+    provider?: true
+    event?: true
+    status?: true
+    error_message?: true
+    created_at?: true
+  }
+
+  export type WebhookLogCountAggregateInputType = {
+    id?: true
+    provider?: true
+    event?: true
+    payload?: true
+    status?: true
+    error_message?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type WebhookLogAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WebhookLog to aggregate.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned WebhookLogs
+    **/
+    _count?: true | WebhookLogCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: WebhookLogAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: WebhookLogSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WebhookLogMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WebhookLogMaxAggregateInputType
+  }
+
+  export type GetWebhookLogAggregateType<T extends WebhookLogAggregateArgs> = {
+        [P in keyof T & keyof AggregateWebhookLog]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWebhookLog[P]>
+      : GetScalarType<T[P], AggregateWebhookLog[P]>
+  }
+
+
+
+
+  export type WebhookLogGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WebhookLogWhereInput
+    orderBy?: WebhookLogOrderByWithAggregationInput | WebhookLogOrderByWithAggregationInput[]
+    by: WebhookLogScalarFieldEnum[] | WebhookLogScalarFieldEnum
+    having?: WebhookLogScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WebhookLogCountAggregateInputType | true
+    _avg?: WebhookLogAvgAggregateInputType
+    _sum?: WebhookLogSumAggregateInputType
+    _min?: WebhookLogMinAggregateInputType
+    _max?: WebhookLogMaxAggregateInputType
+  }
+
+  export type WebhookLogGroupByOutputType = {
+    id: number
+    provider: string
+    event: string
+    payload: JsonValue
+    status: string
+    error_message: string | null
+    created_at: Date
+    _count: WebhookLogCountAggregateOutputType | null
+    _avg: WebhookLogAvgAggregateOutputType | null
+    _sum: WebhookLogSumAggregateOutputType | null
+    _min: WebhookLogMinAggregateOutputType | null
+    _max: WebhookLogMaxAggregateOutputType | null
+  }
+
+  type GetWebhookLogGroupByPayload<T extends WebhookLogGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WebhookLogGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WebhookLogGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WebhookLogGroupByOutputType[P]>
+            : GetScalarType<T[P], WebhookLogGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WebhookLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    provider?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error_message?: boolean
+    created_at?: boolean
+  }, ExtArgs["result"]["webhookLog"]>
+
+  export type WebhookLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    provider?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error_message?: boolean
+    created_at?: boolean
+  }, ExtArgs["result"]["webhookLog"]>
+
+  export type WebhookLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    provider?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error_message?: boolean
+    created_at?: boolean
+  }, ExtArgs["result"]["webhookLog"]>
+
+  export type WebhookLogSelectScalar = {
+    id?: boolean
+    provider?: boolean
+    event?: boolean
+    payload?: boolean
+    status?: boolean
+    error_message?: boolean
+    created_at?: boolean
+  }
+
+  export type WebhookLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "provider" | "event" | "payload" | "status" | "error_message" | "created_at", ExtArgs["result"]["webhookLog"]>
+
+  export type $WebhookLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "WebhookLog"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      provider: string
+      event: string
+      payload: Prisma.JsonValue
+      status: string
+      error_message: string | null
+      created_at: Date
+    }, ExtArgs["result"]["webhookLog"]>
+    composites: {}
+  }
+
+  type WebhookLogGetPayload<S extends boolean | null | undefined | WebhookLogDefaultArgs> = $Result.GetResult<Prisma.$WebhookLogPayload, S>
+
+  type WebhookLogCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WebhookLogFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WebhookLogCountAggregateInputType | true
+    }
+
+  export interface WebhookLogDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['WebhookLog'], meta: { name: 'WebhookLog' } }
+    /**
+     * Find zero or one WebhookLog that matches the filter.
+     * @param {WebhookLogFindUniqueArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WebhookLogFindUniqueArgs>(args: SelectSubset<T, WebhookLogFindUniqueArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one WebhookLog that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WebhookLogFindUniqueOrThrowArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WebhookLogFindUniqueOrThrowArgs>(args: SelectSubset<T, WebhookLogFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WebhookLog that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogFindFirstArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WebhookLogFindFirstArgs>(args?: SelectSubset<T, WebhookLogFindFirstArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first WebhookLog that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogFindFirstOrThrowArgs} args - Arguments to find a WebhookLog
+     * @example
+     * // Get one WebhookLog
+     * const webhookLog = await prisma.webhookLog.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WebhookLogFindFirstOrThrowArgs>(args?: SelectSubset<T, WebhookLogFindFirstOrThrowArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more WebhookLogs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all WebhookLogs
+     * const webhookLogs = await prisma.webhookLog.findMany()
+     * 
+     * // Get first 10 WebhookLogs
+     * const webhookLogs = await prisma.webhookLog.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const webhookLogWithIdOnly = await prisma.webhookLog.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WebhookLogFindManyArgs>(args?: SelectSubset<T, WebhookLogFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a WebhookLog.
+     * @param {WebhookLogCreateArgs} args - Arguments to create a WebhookLog.
+     * @example
+     * // Create one WebhookLog
+     * const WebhookLog = await prisma.webhookLog.create({
+     *   data: {
+     *     // ... data to create a WebhookLog
+     *   }
+     * })
+     * 
+     */
+    create<T extends WebhookLogCreateArgs>(args: SelectSubset<T, WebhookLogCreateArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many WebhookLogs.
+     * @param {WebhookLogCreateManyArgs} args - Arguments to create many WebhookLogs.
+     * @example
+     * // Create many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WebhookLogCreateManyArgs>(args?: SelectSubset<T, WebhookLogCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many WebhookLogs and returns the data saved in the database.
+     * @param {WebhookLogCreateManyAndReturnArgs} args - Arguments to create many WebhookLogs.
+     * @example
+     * // Create many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many WebhookLogs and only return the `id`
+     * const webhookLogWithIdOnly = await prisma.webhookLog.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WebhookLogCreateManyAndReturnArgs>(args?: SelectSubset<T, WebhookLogCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a WebhookLog.
+     * @param {WebhookLogDeleteArgs} args - Arguments to delete one WebhookLog.
+     * @example
+     * // Delete one WebhookLog
+     * const WebhookLog = await prisma.webhookLog.delete({
+     *   where: {
+     *     // ... filter to delete one WebhookLog
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WebhookLogDeleteArgs>(args: SelectSubset<T, WebhookLogDeleteArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one WebhookLog.
+     * @param {WebhookLogUpdateArgs} args - Arguments to update one WebhookLog.
+     * @example
+     * // Update one WebhookLog
+     * const webhookLog = await prisma.webhookLog.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WebhookLogUpdateArgs>(args: SelectSubset<T, WebhookLogUpdateArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more WebhookLogs.
+     * @param {WebhookLogDeleteManyArgs} args - Arguments to filter WebhookLogs to delete.
+     * @example
+     * // Delete a few WebhookLogs
+     * const { count } = await prisma.webhookLog.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WebhookLogDeleteManyArgs>(args?: SelectSubset<T, WebhookLogDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WebhookLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WebhookLogUpdateManyArgs>(args: SelectSubset<T, WebhookLogUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more WebhookLogs and returns the data updated in the database.
+     * @param {WebhookLogUpdateManyAndReturnArgs} args - Arguments to update many WebhookLogs.
+     * @example
+     * // Update many WebhookLogs
+     * const webhookLog = await prisma.webhookLog.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more WebhookLogs and only return the `id`
+     * const webhookLogWithIdOnly = await prisma.webhookLog.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WebhookLogUpdateManyAndReturnArgs>(args: SelectSubset<T, WebhookLogUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one WebhookLog.
+     * @param {WebhookLogUpsertArgs} args - Arguments to update or create a WebhookLog.
+     * @example
+     * // Update or create a WebhookLog
+     * const webhookLog = await prisma.webhookLog.upsert({
+     *   create: {
+     *     // ... data to create a WebhookLog
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the WebhookLog we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WebhookLogUpsertArgs>(args: SelectSubset<T, WebhookLogUpsertArgs<ExtArgs>>): Prisma__WebhookLogClient<$Result.GetResult<Prisma.$WebhookLogPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of WebhookLogs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogCountArgs} args - Arguments to filter WebhookLogs to count.
+     * @example
+     * // Count the number of WebhookLogs
+     * const count = await prisma.webhookLog.count({
+     *   where: {
+     *     // ... the filter for the WebhookLogs we want to count
+     *   }
+     * })
+    **/
+    count<T extends WebhookLogCountArgs>(
+      args?: Subset<T, WebhookLogCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WebhookLogCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a WebhookLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WebhookLogAggregateArgs>(args: Subset<T, WebhookLogAggregateArgs>): Prisma.PrismaPromise<GetWebhookLogAggregateType<T>>
+
+    /**
+     * Group by WebhookLog.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WebhookLogGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WebhookLogGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WebhookLogGroupByArgs['orderBy'] }
+        : { orderBy?: WebhookLogGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WebhookLogGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWebhookLogGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the WebhookLog model
+   */
+  readonly fields: WebhookLogFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for WebhookLog.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WebhookLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the WebhookLog model
+   */
+  interface WebhookLogFieldRefs {
+    readonly id: FieldRef<"WebhookLog", 'Int'>
+    readonly provider: FieldRef<"WebhookLog", 'String'>
+    readonly event: FieldRef<"WebhookLog", 'String'>
+    readonly payload: FieldRef<"WebhookLog", 'Json'>
+    readonly status: FieldRef<"WebhookLog", 'String'>
+    readonly error_message: FieldRef<"WebhookLog", 'String'>
+    readonly created_at: FieldRef<"WebhookLog", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * WebhookLog findUnique
+   */
+  export type WebhookLogFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog findUniqueOrThrow
+   */
+  export type WebhookLogFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog findFirst
+   */
+  export type WebhookLogFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WebhookLogs.
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WebhookLogs.
+     */
+    distinct?: WebhookLogScalarFieldEnum | WebhookLogScalarFieldEnum[]
+  }
+
+  /**
+   * WebhookLog findFirstOrThrow
+   */
+  export type WebhookLogFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WebhookLog to fetch.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for WebhookLogs.
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of WebhookLogs.
+     */
+    distinct?: WebhookLogScalarFieldEnum | WebhookLogScalarFieldEnum[]
+  }
+
+  /**
+   * WebhookLog findMany
+   */
+  export type WebhookLogFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * Filter, which WebhookLogs to fetch.
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of WebhookLogs to fetch.
+     */
+    orderBy?: WebhookLogOrderByWithRelationInput | WebhookLogOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing WebhookLogs.
+     */
+    cursor?: WebhookLogWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` WebhookLogs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` WebhookLogs.
+     */
+    skip?: number
+    distinct?: WebhookLogScalarFieldEnum | WebhookLogScalarFieldEnum[]
+  }
+
+  /**
+   * WebhookLog create
+   */
+  export type WebhookLogCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * The data needed to create a WebhookLog.
+     */
+    data: XOR<WebhookLogCreateInput, WebhookLogUncheckedCreateInput>
+  }
+
+  /**
+   * WebhookLog createMany
+   */
+  export type WebhookLogCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many WebhookLogs.
+     */
+    data: WebhookLogCreateManyInput | WebhookLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WebhookLog createManyAndReturn
+   */
+  export type WebhookLogCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * The data used to create many WebhookLogs.
+     */
+    data: WebhookLogCreateManyInput | WebhookLogCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * WebhookLog update
+   */
+  export type WebhookLogUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * The data needed to update a WebhookLog.
+     */
+    data: XOR<WebhookLogUpdateInput, WebhookLogUncheckedUpdateInput>
+    /**
+     * Choose, which WebhookLog to update.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog updateMany
+   */
+  export type WebhookLogUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update WebhookLogs.
+     */
+    data: XOR<WebhookLogUpdateManyMutationInput, WebhookLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WebhookLogs to update
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * Limit how many WebhookLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WebhookLog updateManyAndReturn
+   */
+  export type WebhookLogUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * The data used to update WebhookLogs.
+     */
+    data: XOR<WebhookLogUpdateManyMutationInput, WebhookLogUncheckedUpdateManyInput>
+    /**
+     * Filter which WebhookLogs to update
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * Limit how many WebhookLogs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * WebhookLog upsert
+   */
+  export type WebhookLogUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * The filter to search for the WebhookLog to update in case it exists.
+     */
+    where: WebhookLogWhereUniqueInput
+    /**
+     * In case the WebhookLog found by the `where` argument doesn't exist, create a new WebhookLog with this data.
+     */
+    create: XOR<WebhookLogCreateInput, WebhookLogUncheckedCreateInput>
+    /**
+     * In case the WebhookLog was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WebhookLogUpdateInput, WebhookLogUncheckedUpdateInput>
+  }
+
+  /**
+   * WebhookLog delete
+   */
+  export type WebhookLogDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
+    /**
+     * Filter which WebhookLog to delete.
+     */
+    where: WebhookLogWhereUniqueInput
+  }
+
+  /**
+   * WebhookLog deleteMany
+   */
+  export type WebhookLogDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which WebhookLogs to delete
+     */
+    where?: WebhookLogWhereInput
+    /**
+     * Limit how many WebhookLogs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * WebhookLog without action
+   */
+  export type WebhookLogDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WebhookLog
+     */
+    select?: WebhookLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the WebhookLog
+     */
+    omit?: WebhookLogOmit<ExtArgs> | null
   }
 
 
@@ -16573,6 +17581,7 @@ export namespace Prisma {
     username: 'username',
     password: 'password',
     phone: 'phone',
+    fcmToken: 'fcmToken',
     bio: 'bio',
     active: 'active',
     provider: 'provider',
@@ -16660,6 +17669,7 @@ export namespace Prisma {
     integration_type: 'integration_type',
     token: 'token',
     sync_token: 'sync_token',
+    refresh_token: 'refresh_token',
     data: 'data',
     created_at: 'created_at',
     updated_at: 'updated_at'
@@ -16723,15 +17733,28 @@ export namespace Prisma {
   export const NotificationScalarFieldEnum: {
     id: 'id',
     user_id: 'user_id',
-    booking_id: 'booking_id',
-    payment_id: 'payment_id',
     message: 'message',
     status: 'status',
+    channels: 'channels',
+    delivery_status: 'delivery_status',
     created_at: 'created_at',
     updated_at: 'updated_at'
   };
 
   export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
+
+
+  export const WebhookLogScalarFieldEnum: {
+    id: 'id',
+    provider: 'provider',
+    event: 'event',
+    payload: 'payload',
+    status: 'status',
+    error_message: 'error_message',
+    created_at: 'created_at'
+  };
+
+  export type WebhookLogScalarFieldEnum = (typeof WebhookLogScalarFieldEnum)[keyof typeof WebhookLogScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -17020,6 +18043,7 @@ export namespace Prisma {
     username?: StringFilter<"User"> | string
     password?: StringNullableFilter<"User"> | string | null
     phone?: StringFilter<"User"> | string
+    fcmToken?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     active?: BoolFilter<"User"> | boolean
     provider?: EnumProviderNullableFilter<"User"> | $Enums.Provider | null
@@ -17047,6 +18071,7 @@ export namespace Prisma {
     username?: SortOrder
     password?: SortOrderInput | SortOrder
     phone?: SortOrder
+    fcmToken?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     active?: SortOrder
     provider?: SortOrderInput | SortOrder
@@ -17077,6 +18102,7 @@ export namespace Prisma {
     zalo_id?: StringNullableFilter<"User"> | string | null
     role?: EnumRoleFilter<"User"> | $Enums.Role
     password?: StringNullableFilter<"User"> | string | null
+    fcmToken?: StringNullableFilter<"User"> | string | null
     bio?: StringNullableFilter<"User"> | string | null
     active?: BoolFilter<"User"> | boolean
     provider?: EnumProviderNullableFilter<"User"> | $Enums.Provider | null
@@ -17104,6 +18130,7 @@ export namespace Prisma {
     username?: SortOrder
     password?: SortOrderInput | SortOrder
     phone?: SortOrder
+    fcmToken?: SortOrderInput | SortOrder
     bio?: SortOrderInput | SortOrder
     active?: SortOrder
     provider?: SortOrderInput | SortOrder
@@ -17133,6 +18160,7 @@ export namespace Prisma {
     username?: StringWithAggregatesFilter<"User"> | string
     password?: StringNullableWithAggregatesFilter<"User"> | string | null
     phone?: StringWithAggregatesFilter<"User"> | string
+    fcmToken?: StringNullableWithAggregatesFilter<"User"> | string | null
     bio?: StringNullableWithAggregatesFilter<"User"> | string | null
     active?: BoolWithAggregatesFilter<"User"> | boolean
     provider?: EnumProviderNullableWithAggregatesFilter<"User"> | $Enums.Provider | null
@@ -17453,7 +18481,6 @@ export namespace Prisma {
     reviews?: ReviewListRelationFilter
     ExternalSession?: ExternalSessionListRelationFilter
     Payment?: PaymentListRelationFilter
-    Notification?: NotificationListRelationFilter
   }
 
   export type BookingOrderByWithRelationInput = {
@@ -17473,7 +18500,6 @@ export namespace Prisma {
     reviews?: ReviewOrderByRelationAggregateInput
     ExternalSession?: ExternalSessionOrderByRelationAggregateInput
     Payment?: PaymentOrderByRelationAggregateInput
-    Notification?: NotificationOrderByRelationAggregateInput
   }
 
   export type BookingWhereUniqueInput = Prisma.AtLeast<{
@@ -17496,7 +18522,6 @@ export namespace Prisma {
     reviews?: ReviewListRelationFilter
     ExternalSession?: ExternalSessionListRelationFilter
     Payment?: PaymentListRelationFilter
-    Notification?: NotificationListRelationFilter
   }, "id">
 
   export type BookingOrderByWithAggregationInput = {
@@ -17540,6 +18565,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFilter<"Credential"> | $Enums.CredentialType
     token?: StringFilter<"Credential"> | string
     sync_token?: StringNullableFilter<"Credential"> | string | null
+    refresh_token?: StringNullableFilter<"Credential"> | string | null
     data?: JsonFilter<"Credential">
     created_at?: DateTimeFilter<"Credential"> | Date | string
     updated_at?: DateTimeFilter<"Credential"> | Date | string
@@ -17552,6 +18578,7 @@ export namespace Prisma {
     integration_type?: SortOrder
     token?: SortOrder
     sync_token?: SortOrderInput | SortOrder
+    refresh_token?: SortOrderInput | SortOrder
     data?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -17568,6 +18595,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFilter<"Credential"> | $Enums.CredentialType
     token?: StringFilter<"Credential"> | string
     sync_token?: StringNullableFilter<"Credential"> | string | null
+    refresh_token?: StringNullableFilter<"Credential"> | string | null
     data?: JsonFilter<"Credential">
     created_at?: DateTimeFilter<"Credential"> | Date | string
     updated_at?: DateTimeFilter<"Credential"> | Date | string
@@ -17580,6 +18608,7 @@ export namespace Prisma {
     integration_type?: SortOrder
     token?: SortOrder
     sync_token?: SortOrderInput | SortOrder
+    refresh_token?: SortOrderInput | SortOrder
     data?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -17599,6 +18628,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeWithAggregatesFilter<"Credential"> | $Enums.CredentialType
     token?: StringWithAggregatesFilter<"Credential"> | string
     sync_token?: StringNullableWithAggregatesFilter<"Credential"> | string | null
+    refresh_token?: StringNullableWithAggregatesFilter<"Credential"> | string | null
     data?: JsonWithAggregatesFilter<"Credential">
     created_at?: DateTimeWithAggregatesFilter<"Credential"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Credential"> | Date | string
@@ -17618,7 +18648,6 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Payment"> | Date | string
     updated_at?: DateTimeFilter<"Payment"> | Date | string
     booking?: XOR<BookingScalarRelationFilter, BookingWhereInput>
-    Notification?: NotificationListRelationFilter
   }
 
   export type PaymentOrderByWithRelationInput = {
@@ -17632,7 +18661,6 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     booking?: BookingOrderByWithRelationInput
-    Notification?: NotificationOrderByRelationAggregateInput
   }
 
   export type PaymentWhereUniqueInput = Prisma.AtLeast<{
@@ -17649,7 +18677,6 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Payment"> | Date | string
     updated_at?: DateTimeFilter<"Payment"> | Date | string
     booking?: XOR<BookingScalarRelationFilter, BookingWhereInput>
-    Notification?: NotificationListRelationFilter
   }, "id" | "booking_id">
 
   export type PaymentOrderByWithAggregationInput = {
@@ -17881,29 +18908,25 @@ export namespace Prisma {
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     id?: IntFilter<"Notification"> | number
     user_id?: IntFilter<"Notification"> | number
-    booking_id?: IntNullableFilter<"Notification"> | number | null
-    payment_id?: IntNullableFilter<"Notification"> | number | null
     message?: StringFilter<"Notification"> | string
     status?: EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
+    channels?: StringNullableFilter<"Notification"> | string | null
+    delivery_status?: StringNullableFilter<"Notification"> | string | null
     created_at?: DateTimeFilter<"Notification"> | Date | string
     updated_at?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
-    payment?: XOR<PaymentNullableScalarRelationFilter, PaymentWhereInput> | null
   }
 
   export type NotificationOrderByWithRelationInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrderInput | SortOrder
-    payment_id?: SortOrderInput | SortOrder
     message?: SortOrder
     status?: SortOrder
+    channels?: SortOrderInput | SortOrder
+    delivery_status?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user?: UserOrderByWithRelationInput
-    booking?: BookingOrderByWithRelationInput
-    payment?: PaymentOrderByWithRelationInput
   }
 
   export type NotificationWhereUniqueInput = Prisma.AtLeast<{
@@ -17912,24 +18935,22 @@ export namespace Prisma {
     OR?: NotificationWhereInput[]
     NOT?: NotificationWhereInput | NotificationWhereInput[]
     user_id?: IntFilter<"Notification"> | number
-    booking_id?: IntNullableFilter<"Notification"> | number | null
-    payment_id?: IntNullableFilter<"Notification"> | number | null
     message?: StringFilter<"Notification"> | string
     status?: EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
+    channels?: StringNullableFilter<"Notification"> | string | null
+    delivery_status?: StringNullableFilter<"Notification"> | string | null
     created_at?: DateTimeFilter<"Notification"> | Date | string
     updated_at?: DateTimeFilter<"Notification"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    booking?: XOR<BookingNullableScalarRelationFilter, BookingWhereInput> | null
-    payment?: XOR<PaymentNullableScalarRelationFilter, PaymentWhereInput> | null
   }, "id">
 
   export type NotificationOrderByWithAggregationInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrderInput | SortOrder
-    payment_id?: SortOrderInput | SortOrder
     message?: SortOrder
     status?: SortOrder
+    channels?: SortOrderInput | SortOrder
+    delivery_status?: SortOrderInput | SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: NotificationCountOrderByAggregateInput
@@ -17945,12 +18966,76 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereWithAggregatesInput | NotificationScalarWhereWithAggregatesInput[]
     id?: IntWithAggregatesFilter<"Notification"> | number
     user_id?: IntWithAggregatesFilter<"Notification"> | number
-    booking_id?: IntNullableWithAggregatesFilter<"Notification"> | number | null
-    payment_id?: IntNullableWithAggregatesFilter<"Notification"> | number | null
     message?: StringWithAggregatesFilter<"Notification"> | string
     status?: EnumNotificationStatusWithAggregatesFilter<"Notification"> | $Enums.NotificationStatus
+    channels?: StringNullableWithAggregatesFilter<"Notification"> | string | null
+    delivery_status?: StringNullableWithAggregatesFilter<"Notification"> | string | null
     created_at?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Notification"> | Date | string
+  }
+
+  export type WebhookLogWhereInput = {
+    AND?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    OR?: WebhookLogWhereInput[]
+    NOT?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    id?: IntFilter<"WebhookLog"> | number
+    provider?: StringFilter<"WebhookLog"> | string
+    event?: StringFilter<"WebhookLog"> | string
+    payload?: JsonFilter<"WebhookLog">
+    status?: StringFilter<"WebhookLog"> | string
+    error_message?: StringNullableFilter<"WebhookLog"> | string | null
+    created_at?: DateTimeFilter<"WebhookLog"> | Date | string
+  }
+
+  export type WebhookLogOrderByWithRelationInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    event?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    error_message?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+  }
+
+  export type WebhookLogWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    OR?: WebhookLogWhereInput[]
+    NOT?: WebhookLogWhereInput | WebhookLogWhereInput[]
+    provider?: StringFilter<"WebhookLog"> | string
+    event?: StringFilter<"WebhookLog"> | string
+    payload?: JsonFilter<"WebhookLog">
+    status?: StringFilter<"WebhookLog"> | string
+    error_message?: StringNullableFilter<"WebhookLog"> | string | null
+    created_at?: DateTimeFilter<"WebhookLog"> | Date | string
+  }, "id">
+
+  export type WebhookLogOrderByWithAggregationInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    event?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    error_message?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    _count?: WebhookLogCountOrderByAggregateInput
+    _avg?: WebhookLogAvgOrderByAggregateInput
+    _max?: WebhookLogMaxOrderByAggregateInput
+    _min?: WebhookLogMinOrderByAggregateInput
+    _sum?: WebhookLogSumOrderByAggregateInput
+  }
+
+  export type WebhookLogScalarWhereWithAggregatesInput = {
+    AND?: WebhookLogScalarWhereWithAggregatesInput | WebhookLogScalarWhereWithAggregatesInput[]
+    OR?: WebhookLogScalarWhereWithAggregatesInput[]
+    NOT?: WebhookLogScalarWhereWithAggregatesInput | WebhookLogScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"WebhookLog"> | number
+    provider?: StringWithAggregatesFilter<"WebhookLog"> | string
+    event?: StringWithAggregatesFilter<"WebhookLog"> | string
+    payload?: JsonWithAggregatesFilter<"WebhookLog">
+    status?: StringWithAggregatesFilter<"WebhookLog"> | string
+    error_message?: StringNullableWithAggregatesFilter<"WebhookLog"> | string | null
+    created_at?: DateTimeWithAggregatesFilter<"WebhookLog"> | Date | string
   }
 
   export type UserCreateInput = {
@@ -17962,6 +19047,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -17989,6 +19075,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -18015,6 +19102,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -18042,6 +19130,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -18069,6 +19158,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -18089,6 +19179,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -18110,6 +19201,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -18420,7 +19512,6 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateInput = {
@@ -18436,7 +19527,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUpdateInput = {
@@ -18451,7 +19541,6 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateInput = {
@@ -18467,7 +19556,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingCreateManyInput = {
@@ -18505,6 +19593,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token?: string | null
+    refresh_token?: string | null
     data: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
@@ -18517,6 +19606,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token?: string | null
+    refresh_token?: string | null
     data: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
@@ -18526,6 +19616,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18538,6 +19629,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18549,6 +19641,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token?: string | null
+    refresh_token?: string | null
     data: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
@@ -18558,6 +19651,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18569,6 +19663,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -18583,7 +19678,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     booking: BookingCreateNestedOneWithoutPaymentInput
-    Notification?: NotificationCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateInput = {
@@ -18596,7 +19690,6 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
     updated_at?: Date | string
-    Notification?: NotificationUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUpdateInput = {
@@ -18608,7 +19701,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     booking?: BookingUpdateOneRequiredWithoutPaymentNestedInput
-    Notification?: NotificationUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateInput = {
@@ -18621,7 +19713,6 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    Notification?: NotificationUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentCreateManyInput = {
@@ -18845,20 +19936,20 @@ export namespace Prisma {
   export type NotificationCreateInput = {
     message: string
     status?: $Enums.NotificationStatus
+    channels?: string | null
+    delivery_status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutNotificationInput
-    booking?: BookingCreateNestedOneWithoutNotificationInput
-    payment?: PaymentCreateNestedOneWithoutNotificationInput
   }
 
   export type NotificationUncheckedCreateInput = {
     id?: number
     user_id: number
-    booking_id?: number | null
-    payment_id?: number | null
     message: string
     status?: $Enums.NotificationStatus
+    channels?: string | null
+    delivery_status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -18866,20 +19957,20 @@ export namespace Prisma {
   export type NotificationUpdateInput = {
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutNotificationNestedInput
-    booking?: BookingUpdateOneWithoutNotificationNestedInput
-    payment?: PaymentUpdateOneWithoutNotificationNestedInput
   }
 
   export type NotificationUncheckedUpdateInput = {
     id?: IntFieldUpdateOperationsInput | number
     user_id?: IntFieldUpdateOperationsInput | number
-    booking_id?: NullableIntFieldUpdateOperationsInput | number | null
-    payment_id?: NullableIntFieldUpdateOperationsInput | number | null
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18887,10 +19978,10 @@ export namespace Prisma {
   export type NotificationCreateManyInput = {
     id?: number
     user_id: number
-    booking_id?: number | null
-    payment_id?: number | null
     message: string
     status?: $Enums.NotificationStatus
+    channels?: string | null
+    delivery_status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -18898,6 +19989,8 @@ export namespace Prisma {
   export type NotificationUpdateManyMutationInput = {
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18905,12 +19998,79 @@ export namespace Prisma {
   export type NotificationUncheckedUpdateManyInput = {
     id?: IntFieldUpdateOperationsInput | number
     user_id?: IntFieldUpdateOperationsInput | number
-    booking_id?: NullableIntFieldUpdateOperationsInput | number | null
-    payment_id?: NullableIntFieldUpdateOperationsInput | number | null
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogCreateInput = {
+    provider: string
+    event: string
+    payload: JsonNullValueInput | InputJsonValue
+    status: string
+    error_message?: string | null
+    created_at?: Date | string
+  }
+
+  export type WebhookLogUncheckedCreateInput = {
+    id?: number
+    provider: string
+    event: string
+    payload: JsonNullValueInput | InputJsonValue
+    status: string
+    error_message?: string | null
+    created_at?: Date | string
+  }
+
+  export type WebhookLogUpdateInput = {
+    provider?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    provider?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogCreateManyInput = {
+    id?: number
+    provider: string
+    event: string
+    payload: JsonNullValueInput | InputJsonValue
+    status: string
+    error_message?: string | null
+    created_at?: Date | string
+  }
+
+  export type WebhookLogUpdateManyMutationInput = {
+    provider?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WebhookLogUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    provider?: StringFieldUpdateOperationsInput | string
+    event?: StringFieldUpdateOperationsInput | string
+    payload?: JsonNullValueInput | InputJsonValue
+    status?: StringFieldUpdateOperationsInput | string
+    error_message?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -19070,6 +20230,7 @@ export namespace Prisma {
     username?: SortOrder
     password?: SortOrder
     phone?: SortOrder
+    fcmToken?: SortOrder
     bio?: SortOrder
     active?: SortOrder
     provider?: SortOrder
@@ -19095,6 +20256,7 @@ export namespace Prisma {
     username?: SortOrder
     password?: SortOrder
     phone?: SortOrder
+    fcmToken?: SortOrder
     bio?: SortOrder
     active?: SortOrder
     provider?: SortOrder
@@ -19116,6 +20278,7 @@ export namespace Prisma {
     username?: SortOrder
     password?: SortOrder
     phone?: SortOrder
+    fcmToken?: SortOrder
     bio?: SortOrder
     active?: SortOrder
     provider?: SortOrder
@@ -19626,6 +20789,7 @@ export namespace Prisma {
     integration_type?: SortOrder
     token?: SortOrder
     sync_token?: SortOrder
+    refresh_token?: SortOrder
     data?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
@@ -19642,6 +20806,7 @@ export namespace Prisma {
     integration_type?: SortOrder
     token?: SortOrder
     sync_token?: SortOrder
+    refresh_token?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -19652,6 +20817,7 @@ export namespace Prisma {
     integration_type?: SortOrder
     token?: SortOrder
     sync_token?: SortOrder
+    refresh_token?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -19998,23 +21164,13 @@ export namespace Prisma {
     not?: NestedEnumNotificationStatusFilter<$PrismaModel> | $Enums.NotificationStatus
   }
 
-  export type BookingNullableScalarRelationFilter = {
-    is?: BookingWhereInput | null
-    isNot?: BookingWhereInput | null
-  }
-
-  export type PaymentNullableScalarRelationFilter = {
-    is?: PaymentWhereInput | null
-    isNot?: PaymentWhereInput | null
-  }
-
   export type NotificationCountOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrder
-    payment_id?: SortOrder
     message?: SortOrder
     status?: SortOrder
+    channels?: SortOrder
+    delivery_status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -20022,17 +21178,15 @@ export namespace Prisma {
   export type NotificationAvgOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrder
-    payment_id?: SortOrder
   }
 
   export type NotificationMaxOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrder
-    payment_id?: SortOrder
     message?: SortOrder
     status?: SortOrder
+    channels?: SortOrder
+    delivery_status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -20040,10 +21194,10 @@ export namespace Prisma {
   export type NotificationMinOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrder
-    payment_id?: SortOrder
     message?: SortOrder
     status?: SortOrder
+    channels?: SortOrder
+    delivery_status?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -20051,8 +21205,6 @@ export namespace Prisma {
   export type NotificationSumOrderByAggregateInput = {
     id?: SortOrder
     user_id?: SortOrder
-    booking_id?: SortOrder
-    payment_id?: SortOrder
   }
 
   export type EnumNotificationStatusWithAggregatesFilter<$PrismaModel = never> = {
@@ -20063,6 +21215,42 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumNotificationStatusFilter<$PrismaModel>
     _max?: NestedEnumNotificationStatusFilter<$PrismaModel>
+  }
+
+  export type WebhookLogCountOrderByAggregateInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    event?: SortOrder
+    payload?: SortOrder
+    status?: SortOrder
+    error_message?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type WebhookLogAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type WebhookLogMaxOrderByAggregateInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    event?: SortOrder
+    status?: SortOrder
+    error_message?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type WebhookLogMinOrderByAggregateInput = {
+    id?: SortOrder
+    provider?: SortOrder
+    event?: SortOrder
+    status?: SortOrder
+    error_message?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type WebhookLogSumOrderByAggregateInput = {
+    id?: SortOrder
   }
 
   export type SessionCreateNestedManyWithoutUserInput = {
@@ -20728,13 +21916,6 @@ export namespace Prisma {
     connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
   }
 
-  export type NotificationCreateNestedManyWithoutBookingInput = {
-    create?: XOR<NotificationCreateWithoutBookingInput, NotificationUncheckedCreateWithoutBookingInput> | NotificationCreateWithoutBookingInput[] | NotificationUncheckedCreateWithoutBookingInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutBookingInput | NotificationCreateOrConnectWithoutBookingInput[]
-    createMany?: NotificationCreateManyBookingInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-  }
-
   export type ReviewUncheckedCreateNestedManyWithoutBookingInput = {
     create?: XOR<ReviewCreateWithoutBookingInput, ReviewUncheckedCreateWithoutBookingInput> | ReviewCreateWithoutBookingInput[] | ReviewUncheckedCreateWithoutBookingInput[]
     connectOrCreate?: ReviewCreateOrConnectWithoutBookingInput | ReviewCreateOrConnectWithoutBookingInput[]
@@ -20754,13 +21935,6 @@ export namespace Prisma {
     connectOrCreate?: PaymentCreateOrConnectWithoutBookingInput | PaymentCreateOrConnectWithoutBookingInput[]
     createMany?: PaymentCreateManyBookingInputEnvelope
     connect?: PaymentWhereUniqueInput | PaymentWhereUniqueInput[]
-  }
-
-  export type NotificationUncheckedCreateNestedManyWithoutBookingInput = {
-    create?: XOR<NotificationCreateWithoutBookingInput, NotificationUncheckedCreateWithoutBookingInput> | NotificationCreateWithoutBookingInput[] | NotificationUncheckedCreateWithoutBookingInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutBookingInput | NotificationCreateOrConnectWithoutBookingInput[]
-    createMany?: NotificationCreateManyBookingInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
   export type BranchUpdateOneRequiredWithoutBookingsNestedInput = {
@@ -20841,20 +22015,6 @@ export namespace Prisma {
     deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
   }
 
-  export type NotificationUpdateManyWithoutBookingNestedInput = {
-    create?: XOR<NotificationCreateWithoutBookingInput, NotificationUncheckedCreateWithoutBookingInput> | NotificationCreateWithoutBookingInput[] | NotificationUncheckedCreateWithoutBookingInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutBookingInput | NotificationCreateOrConnectWithoutBookingInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutBookingInput | NotificationUpsertWithWhereUniqueWithoutBookingInput[]
-    createMany?: NotificationCreateManyBookingInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutBookingInput | NotificationUpdateWithWhereUniqueWithoutBookingInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutBookingInput | NotificationUpdateManyWithWhereWithoutBookingInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-  }
-
   export type NullableIntFieldUpdateOperationsInput = {
     set?: number | null
     increment?: number
@@ -20905,20 +22065,6 @@ export namespace Prisma {
     deleteMany?: PaymentScalarWhereInput | PaymentScalarWhereInput[]
   }
 
-  export type NotificationUncheckedUpdateManyWithoutBookingNestedInput = {
-    create?: XOR<NotificationCreateWithoutBookingInput, NotificationUncheckedCreateWithoutBookingInput> | NotificationCreateWithoutBookingInput[] | NotificationUncheckedCreateWithoutBookingInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutBookingInput | NotificationCreateOrConnectWithoutBookingInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutBookingInput | NotificationUpsertWithWhereUniqueWithoutBookingInput[]
-    createMany?: NotificationCreateManyBookingInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutBookingInput | NotificationUpdateWithWhereUniqueWithoutBookingInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutBookingInput | NotificationUpdateManyWithWhereWithoutBookingInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-  }
-
   export type UserCreateNestedOneWithoutCredentialsInput = {
     create?: XOR<UserCreateWithoutCredentialsInput, UserUncheckedCreateWithoutCredentialsInput>
     connectOrCreate?: UserCreateOrConnectWithoutCredentialsInput
@@ -20943,20 +22089,6 @@ export namespace Prisma {
     connect?: BookingWhereUniqueInput
   }
 
-  export type NotificationCreateNestedManyWithoutPaymentInput = {
-    create?: XOR<NotificationCreateWithoutPaymentInput, NotificationUncheckedCreateWithoutPaymentInput> | NotificationCreateWithoutPaymentInput[] | NotificationUncheckedCreateWithoutPaymentInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutPaymentInput | NotificationCreateOrConnectWithoutPaymentInput[]
-    createMany?: NotificationCreateManyPaymentInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-  }
-
-  export type NotificationUncheckedCreateNestedManyWithoutPaymentInput = {
-    create?: XOR<NotificationCreateWithoutPaymentInput, NotificationUncheckedCreateWithoutPaymentInput> | NotificationCreateWithoutPaymentInput[] | NotificationUncheckedCreateWithoutPaymentInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutPaymentInput | NotificationCreateOrConnectWithoutPaymentInput[]
-    createMany?: NotificationCreateManyPaymentInputEnvelope
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-  }
-
   export type EnumPaymentMethodFieldUpdateOperationsInput = {
     set?: $Enums.PaymentMethod
   }
@@ -20971,34 +22103,6 @@ export namespace Prisma {
     upsert?: BookingUpsertWithoutPaymentInput
     connect?: BookingWhereUniqueInput
     update?: XOR<XOR<BookingUpdateToOneWithWhereWithoutPaymentInput, BookingUpdateWithoutPaymentInput>, BookingUncheckedUpdateWithoutPaymentInput>
-  }
-
-  export type NotificationUpdateManyWithoutPaymentNestedInput = {
-    create?: XOR<NotificationCreateWithoutPaymentInput, NotificationUncheckedCreateWithoutPaymentInput> | NotificationCreateWithoutPaymentInput[] | NotificationUncheckedCreateWithoutPaymentInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutPaymentInput | NotificationCreateOrConnectWithoutPaymentInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutPaymentInput | NotificationUpsertWithWhereUniqueWithoutPaymentInput[]
-    createMany?: NotificationCreateManyPaymentInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutPaymentInput | NotificationUpdateWithWhereUniqueWithoutPaymentInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutPaymentInput | NotificationUpdateManyWithWhereWithoutPaymentInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutPaymentNestedInput = {
-    create?: XOR<NotificationCreateWithoutPaymentInput, NotificationUncheckedCreateWithoutPaymentInput> | NotificationCreateWithoutPaymentInput[] | NotificationUncheckedCreateWithoutPaymentInput[]
-    connectOrCreate?: NotificationCreateOrConnectWithoutPaymentInput | NotificationCreateOrConnectWithoutPaymentInput[]
-    upsert?: NotificationUpsertWithWhereUniqueWithoutPaymentInput | NotificationUpsertWithWhereUniqueWithoutPaymentInput[]
-    createMany?: NotificationCreateManyPaymentInputEnvelope
-    set?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    disconnect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    delete?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
-    update?: NotificationUpdateWithWhereUniqueWithoutPaymentInput | NotificationUpdateWithWhereUniqueWithoutPaymentInput[]
-    updateMany?: NotificationUpdateManyWithWhereWithoutPaymentInput | NotificationUpdateManyWithWhereWithoutPaymentInput[]
-    deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
   export type BookingCreateNestedOneWithoutExternalSessionInput = {
@@ -21061,18 +22165,6 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type BookingCreateNestedOneWithoutNotificationInput = {
-    create?: XOR<BookingCreateWithoutNotificationInput, BookingUncheckedCreateWithoutNotificationInput>
-    connectOrCreate?: BookingCreateOrConnectWithoutNotificationInput
-    connect?: BookingWhereUniqueInput
-  }
-
-  export type PaymentCreateNestedOneWithoutNotificationInput = {
-    create?: XOR<PaymentCreateWithoutNotificationInput, PaymentUncheckedCreateWithoutNotificationInput>
-    connectOrCreate?: PaymentCreateOrConnectWithoutNotificationInput
-    connect?: PaymentWhereUniqueInput
-  }
-
   export type EnumNotificationStatusFieldUpdateOperationsInput = {
     set?: $Enums.NotificationStatus
   }
@@ -21083,26 +22175,6 @@ export namespace Prisma {
     upsert?: UserUpsertWithoutNotificationInput
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutNotificationInput, UserUpdateWithoutNotificationInput>, UserUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type BookingUpdateOneWithoutNotificationNestedInput = {
-    create?: XOR<BookingCreateWithoutNotificationInput, BookingUncheckedCreateWithoutNotificationInput>
-    connectOrCreate?: BookingCreateOrConnectWithoutNotificationInput
-    upsert?: BookingUpsertWithoutNotificationInput
-    disconnect?: BookingWhereInput | boolean
-    delete?: BookingWhereInput | boolean
-    connect?: BookingWhereUniqueInput
-    update?: XOR<XOR<BookingUpdateToOneWithWhereWithoutNotificationInput, BookingUpdateWithoutNotificationInput>, BookingUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type PaymentUpdateOneWithoutNotificationNestedInput = {
-    create?: XOR<PaymentCreateWithoutNotificationInput, PaymentUncheckedCreateWithoutNotificationInput>
-    connectOrCreate?: PaymentCreateOrConnectWithoutNotificationInput
-    upsert?: PaymentUpsertWithoutNotificationInput
-    disconnect?: PaymentWhereInput | boolean
-    delete?: PaymentWhereInput | boolean
-    connect?: PaymentWhereUniqueInput
-    update?: XOR<XOR<PaymentUpdateToOneWithWhereWithoutNotificationInput, PaymentUpdateWithoutNotificationInput>, PaymentUncheckedUpdateWithoutNotificationInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -21590,6 +22662,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token?: string | null
+    refresh_token?: string | null
     data: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
@@ -21600,6 +22673,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token?: string | null
+    refresh_token?: string | null
     data: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
@@ -21655,7 +22729,6 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutCustomerInput = {
@@ -21670,7 +22743,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutCustomerInput = {
@@ -21686,18 +22758,18 @@ export namespace Prisma {
   export type NotificationCreateWithoutUserInput = {
     message: string
     status?: $Enums.NotificationStatus
+    channels?: string | null
+    delivery_status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
-    booking?: BookingCreateNestedOneWithoutNotificationInput
-    payment?: PaymentCreateNestedOneWithoutNotificationInput
   }
 
   export type NotificationUncheckedCreateWithoutUserInput = {
     id?: number
-    booking_id?: number | null
-    payment_id?: number | null
     message: string
     status?: $Enums.NotificationStatus
+    channels?: string | null
+    delivery_status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -21795,6 +22867,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFilter<"Credential"> | $Enums.CredentialType
     token?: StringFilter<"Credential"> | string
     sync_token?: StringNullableFilter<"Credential"> | string | null
+    refresh_token?: StringNullableFilter<"Credential"> | string | null
     data?: JsonFilter<"Credential">
     created_at?: DateTimeFilter<"Credential"> | Date | string
     updated_at?: DateTimeFilter<"Credential"> | Date | string
@@ -21883,10 +22956,10 @@ export namespace Prisma {
     NOT?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
     id?: IntFilter<"Notification"> | number
     user_id?: IntFilter<"Notification"> | number
-    booking_id?: IntNullableFilter<"Notification"> | number | null
-    payment_id?: IntNullableFilter<"Notification"> | number | null
     message?: StringFilter<"Notification"> | string
     status?: EnumNotificationStatusFilter<"Notification"> | $Enums.NotificationStatus
+    channels?: StringNullableFilter<"Notification"> | string | null
+    delivery_status?: StringNullableFilter<"Notification"> | string | null
     created_at?: DateTimeFilter<"Notification"> | Date | string
     updated_at?: DateTimeFilter<"Notification"> | Date | string
   }
@@ -21934,7 +23007,6 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutServiceInput = {
@@ -21949,7 +23021,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutServiceInput = {
@@ -22027,7 +23098,6 @@ export namespace Prisma {
     customer?: UserCreateNestedOneWithoutBookingsInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutReviewsInput = {
@@ -22042,7 +23112,6 @@ export namespace Prisma {
     created_at?: Date | string
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutReviewsInput = {
@@ -22091,6 +23160,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -22117,6 +23187,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -22160,7 +23231,6 @@ export namespace Prisma {
     customer?: UserUpdateOneWithoutBookingsNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutReviewsInput = {
@@ -22175,7 +23245,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BranchUpsertWithoutReviewsInput = {
@@ -22236,6 +23305,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -22262,6 +23332,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -22343,7 +23414,6 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutBranchInput = {
@@ -22358,7 +23428,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutBranchInput = {
@@ -22531,7 +23600,6 @@ export namespace Prisma {
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutStylistInput = {
@@ -22546,7 +23614,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutStylistInput = {
@@ -22698,6 +23765,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -22724,6 +23792,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -22805,7 +23874,6 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
     updated_at?: Date | string
-    Notification?: NotificationCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentUncheckedCreateWithoutBookingInput = {
@@ -22817,7 +23885,6 @@ export namespace Prisma {
     amount: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
     updated_at?: Date | string
-    Notification?: NotificationUncheckedCreateNestedManyWithoutPaymentInput
   }
 
   export type PaymentCreateOrConnectWithoutBookingInput = {
@@ -22827,35 +23894,6 @@ export namespace Prisma {
 
   export type PaymentCreateManyBookingInputEnvelope = {
     data: PaymentCreateManyBookingInput | PaymentCreateManyBookingInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type NotificationCreateWithoutBookingInput = {
-    message: string
-    status?: $Enums.NotificationStatus
-    created_at?: Date | string
-    updated_at?: Date | string
-    user: UserCreateNestedOneWithoutNotificationInput
-    payment?: PaymentCreateNestedOneWithoutNotificationInput
-  }
-
-  export type NotificationUncheckedCreateWithoutBookingInput = {
-    id?: number
-    user_id: number
-    payment_id?: number | null
-    message: string
-    status?: $Enums.NotificationStatus
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type NotificationCreateOrConnectWithoutBookingInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutBookingInput, NotificationUncheckedCreateWithoutBookingInput>
-  }
-
-  export type NotificationCreateManyBookingInputEnvelope = {
-    data: NotificationCreateManyBookingInput | NotificationCreateManyBookingInput[]
     skipDuplicates?: boolean
   }
 
@@ -22973,6 +24011,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -22999,6 +24038,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23089,22 +24129,6 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Payment"> | Date | string
   }
 
-  export type NotificationUpsertWithWhereUniqueWithoutBookingInput = {
-    where: NotificationWhereUniqueInput
-    update: XOR<NotificationUpdateWithoutBookingInput, NotificationUncheckedUpdateWithoutBookingInput>
-    create: XOR<NotificationCreateWithoutBookingInput, NotificationUncheckedCreateWithoutBookingInput>
-  }
-
-  export type NotificationUpdateWithWhereUniqueWithoutBookingInput = {
-    where: NotificationWhereUniqueInput
-    data: XOR<NotificationUpdateWithoutBookingInput, NotificationUncheckedUpdateWithoutBookingInput>
-  }
-
-  export type NotificationUpdateManyWithWhereWithoutBookingInput = {
-    where: NotificationScalarWhereInput
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutBookingInput>
-  }
-
   export type UserCreateWithoutCredentialsInput = {
     email: string
     firstName: string
@@ -23114,6 +24138,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23140,6 +24165,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23181,6 +24207,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23207,6 +24234,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23234,7 +24262,6 @@ export namespace Prisma {
     customer?: UserCreateNestedOneWithoutBookingsInput
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutPaymentInput = {
@@ -23249,41 +24276,11 @@ export namespace Prisma {
     created_at?: Date | string
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutPaymentInput = {
     where: BookingWhereUniqueInput
     create: XOR<BookingCreateWithoutPaymentInput, BookingUncheckedCreateWithoutPaymentInput>
-  }
-
-  export type NotificationCreateWithoutPaymentInput = {
-    message: string
-    status?: $Enums.NotificationStatus
-    created_at?: Date | string
-    updated_at?: Date | string
-    user: UserCreateNestedOneWithoutNotificationInput
-    booking?: BookingCreateNestedOneWithoutNotificationInput
-  }
-
-  export type NotificationUncheckedCreateWithoutPaymentInput = {
-    id?: number
-    user_id: number
-    booking_id?: number | null
-    message: string
-    status?: $Enums.NotificationStatus
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type NotificationCreateOrConnectWithoutPaymentInput = {
-    where: NotificationWhereUniqueInput
-    create: XOR<NotificationCreateWithoutPaymentInput, NotificationUncheckedCreateWithoutPaymentInput>
-  }
-
-  export type NotificationCreateManyPaymentInputEnvelope = {
-    data: NotificationCreateManyPaymentInput | NotificationCreateManyPaymentInput[]
-    skipDuplicates?: boolean
   }
 
   export type BookingUpsertWithoutPaymentInput = {
@@ -23308,7 +24305,6 @@ export namespace Prisma {
     customer?: UserUpdateOneWithoutBookingsNestedInput
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutPaymentInput = {
@@ -23323,23 +24319,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
-  }
-
-  export type NotificationUpsertWithWhereUniqueWithoutPaymentInput = {
-    where: NotificationWhereUniqueInput
-    update: XOR<NotificationUpdateWithoutPaymentInput, NotificationUncheckedUpdateWithoutPaymentInput>
-    create: XOR<NotificationCreateWithoutPaymentInput, NotificationUncheckedCreateWithoutPaymentInput>
-  }
-
-  export type NotificationUpdateWithWhereUniqueWithoutPaymentInput = {
-    where: NotificationWhereUniqueInput
-    data: XOR<NotificationUpdateWithoutPaymentInput, NotificationUncheckedUpdateWithoutPaymentInput>
-  }
-
-  export type NotificationUpdateManyWithWhereWithoutPaymentInput = {
-    where: NotificationScalarWhereInput
-    data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutPaymentInput>
   }
 
   export type BookingCreateWithoutExternalSessionInput = {
@@ -23353,7 +24332,6 @@ export namespace Prisma {
     customer?: UserCreateNestedOneWithoutBookingsInput
     reviews?: ReviewCreateNestedManyWithoutBookingInput
     Payment?: PaymentCreateNestedManyWithoutBookingInput
-    Notification?: NotificationCreateNestedManyWithoutBookingInput
   }
 
   export type BookingUncheckedCreateWithoutExternalSessionInput = {
@@ -23368,7 +24346,6 @@ export namespace Prisma {
     created_at?: Date | string
     reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
     Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-    Notification?: NotificationUncheckedCreateNestedManyWithoutBookingInput
   }
 
   export type BookingCreateOrConnectWithoutExternalSessionInput = {
@@ -23398,7 +24375,6 @@ export namespace Prisma {
     customer?: UserUpdateOneWithoutBookingsNestedInput
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutExternalSessionInput = {
@@ -23413,7 +24389,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type UserCreateWithoutImagesInput = {
@@ -23425,6 +24400,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23451,6 +24427,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23492,6 +24469,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23518,6 +24496,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23543,6 +24522,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23569,6 +24549,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23610,6 +24591,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23636,6 +24618,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23661,6 +24644,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23687,6 +24671,7 @@ export namespace Prisma {
     username: string
     password?: string | null
     phone: string
+    fcmToken?: string | null
     bio?: string | null
     active?: boolean
     provider?: $Enums.Provider | null
@@ -23706,68 +24691,6 @@ export namespace Prisma {
   export type UserCreateOrConnectWithoutNotificationInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutNotificationInput, UserUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type BookingCreateWithoutNotificationInput = {
-    startAt: Date | string
-    status: string
-    total_price: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    branch: BranchCreateNestedOneWithoutBookingsInput
-    stylist?: StylistCreateNestedOneWithoutBookingsInput
-    service: ServiceCreateNestedOneWithoutBookingsInput
-    customer?: UserCreateNestedOneWithoutBookingsInput
-    reviews?: ReviewCreateNestedManyWithoutBookingInput
-    ExternalSession?: ExternalSessionCreateNestedManyWithoutBookingInput
-    Payment?: PaymentCreateNestedManyWithoutBookingInput
-  }
-
-  export type BookingUncheckedCreateWithoutNotificationInput = {
-    id?: number
-    branch_id: number
-    stylist_id?: number | null
-    service_id: number
-    customer_id?: number | null
-    startAt: Date | string
-    status: string
-    total_price: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    reviews?: ReviewUncheckedCreateNestedManyWithoutBookingInput
-    ExternalSession?: ExternalSessionUncheckedCreateNestedManyWithoutBookingInput
-    Payment?: PaymentUncheckedCreateNestedManyWithoutBookingInput
-  }
-
-  export type BookingCreateOrConnectWithoutNotificationInput = {
-    where: BookingWhereUniqueInput
-    create: XOR<BookingCreateWithoutNotificationInput, BookingUncheckedCreateWithoutNotificationInput>
-  }
-
-  export type PaymentCreateWithoutNotificationInput = {
-    payment_method: $Enums.PaymentMethod
-    payment_intent_id?: string | null
-    payment_url?: string | null
-    status: $Enums.PaymentStatus
-    amount: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    updated_at?: Date | string
-    booking: BookingCreateNestedOneWithoutPaymentInput
-  }
-
-  export type PaymentUncheckedCreateWithoutNotificationInput = {
-    id?: number
-    booking_id: number
-    payment_method: $Enums.PaymentMethod
-    payment_intent_id?: string | null
-    payment_url?: string | null
-    status: $Enums.PaymentStatus
-    amount: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type PaymentCreateOrConnectWithoutNotificationInput = {
-    where: PaymentWhereUniqueInput
-    create: XOR<PaymentCreateWithoutNotificationInput, PaymentUncheckedCreateWithoutNotificationInput>
   }
 
   export type UserUpsertWithoutNotificationInput = {
@@ -23790,6 +24713,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23816,6 +24740,7 @@ export namespace Prisma {
     username?: StringFieldUpdateOperationsInput | string
     password?: NullableStringFieldUpdateOperationsInput | string | null
     phone?: StringFieldUpdateOperationsInput | string
+    fcmToken?: NullableStringFieldUpdateOperationsInput | string | null
     bio?: NullableStringFieldUpdateOperationsInput | string | null
     active?: BoolFieldUpdateOperationsInput | boolean
     provider?: NullableEnumProviderFieldUpdateOperationsInput | $Enums.Provider | null
@@ -23830,80 +24755,6 @@ export namespace Prisma {
     credentials?: CredentialUncheckedUpdateManyWithoutUserNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutUserNestedInput
     bookings?: BookingUncheckedUpdateManyWithoutCustomerNestedInput
-  }
-
-  export type BookingUpsertWithoutNotificationInput = {
-    update: XOR<BookingUpdateWithoutNotificationInput, BookingUncheckedUpdateWithoutNotificationInput>
-    create: XOR<BookingCreateWithoutNotificationInput, BookingUncheckedCreateWithoutNotificationInput>
-    where?: BookingWhereInput
-  }
-
-  export type BookingUpdateToOneWithWhereWithoutNotificationInput = {
-    where?: BookingWhereInput
-    data: XOR<BookingUpdateWithoutNotificationInput, BookingUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type BookingUpdateWithoutNotificationInput = {
-    startAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    branch?: BranchUpdateOneRequiredWithoutBookingsNestedInput
-    stylist?: StylistUpdateOneWithoutBookingsNestedInput
-    service?: ServiceUpdateOneRequiredWithoutBookingsNestedInput
-    customer?: UserUpdateOneWithoutBookingsNestedInput
-    reviews?: ReviewUpdateManyWithoutBookingNestedInput
-    ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
-    Payment?: PaymentUpdateManyWithoutBookingNestedInput
-  }
-
-  export type BookingUncheckedUpdateWithoutNotificationInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    branch_id?: IntFieldUpdateOperationsInput | number
-    stylist_id?: NullableIntFieldUpdateOperationsInput | number | null
-    service_id?: IntFieldUpdateOperationsInput | number
-    customer_id?: NullableIntFieldUpdateOperationsInput | number | null
-    startAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    status?: StringFieldUpdateOperationsInput | string
-    total_price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
-    ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
-    Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-  }
-
-  export type PaymentUpsertWithoutNotificationInput = {
-    update: XOR<PaymentUpdateWithoutNotificationInput, PaymentUncheckedUpdateWithoutNotificationInput>
-    create: XOR<PaymentCreateWithoutNotificationInput, PaymentUncheckedCreateWithoutNotificationInput>
-    where?: PaymentWhereInput
-  }
-
-  export type PaymentUpdateToOneWithWhereWithoutNotificationInput = {
-    where?: PaymentWhereInput
-    data: XOR<PaymentUpdateWithoutNotificationInput, PaymentUncheckedUpdateWithoutNotificationInput>
-  }
-
-  export type PaymentUpdateWithoutNotificationInput = {
-    payment_method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-    payment_intent_id?: NullableStringFieldUpdateOperationsInput | string | null
-    payment_url?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    booking?: BookingUpdateOneRequiredWithoutPaymentNestedInput
-  }
-
-  export type PaymentUncheckedUpdateWithoutNotificationInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    booking_id?: IntFieldUpdateOperationsInput | number
-    payment_method?: EnumPaymentMethodFieldUpdateOperationsInput | $Enums.PaymentMethod
-    payment_intent_id?: NullableStringFieldUpdateOperationsInput | string | null
-    payment_url?: NullableStringFieldUpdateOperationsInput | string | null
-    status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
-    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type SessionCreateManyUserInput = {
@@ -23929,6 +24780,7 @@ export namespace Prisma {
     integration_type: $Enums.CredentialType
     token: string
     sync_token?: string | null
+    refresh_token?: string | null
     data: JsonNullValueInput | InputJsonValue
     created_at?: Date | string
     updated_at?: Date | string
@@ -23957,10 +24809,10 @@ export namespace Prisma {
 
   export type NotificationCreateManyUserInput = {
     id?: number
-    booking_id?: number | null
-    payment_id?: number | null
     message: string
     status?: $Enums.NotificationStatus
+    channels?: string | null
+    delivery_status?: string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -24021,6 +24873,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24031,6 +24884,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24041,6 +24895,7 @@ export namespace Prisma {
     integration_type?: EnumCredentialTypeFieldUpdateOperationsInput | $Enums.CredentialType
     token?: StringFieldUpdateOperationsInput | string
     sync_token?: NullableStringFieldUpdateOperationsInput | string | null
+    refresh_token?: NullableStringFieldUpdateOperationsInput | string | null
     data?: JsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -24086,7 +24941,6 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutCustomerInput = {
@@ -24101,7 +24955,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateManyWithoutCustomerInput = {
@@ -24118,28 +24971,28 @@ export namespace Prisma {
   export type NotificationUpdateWithoutUserInput = {
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    booking?: BookingUpdateOneWithoutNotificationNestedInput
-    payment?: PaymentUpdateOneWithoutNotificationNestedInput
   }
 
   export type NotificationUncheckedUpdateWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    booking_id?: NullableIntFieldUpdateOperationsInput | number | null
-    payment_id?: NullableIntFieldUpdateOperationsInput | number | null
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type NotificationUncheckedUpdateManyWithoutUserInput = {
     id?: IntFieldUpdateOperationsInput | number
-    booking_id?: NullableIntFieldUpdateOperationsInput | number | null
-    payment_id?: NullableIntFieldUpdateOperationsInput | number | null
     message?: StringFieldUpdateOperationsInput | string
     status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
+    channels?: NullableStringFieldUpdateOperationsInput | string | null
+    delivery_status?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -24166,7 +25019,6 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutServiceInput = {
@@ -24181,7 +25033,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateManyWithoutServiceInput = {
@@ -24293,7 +25144,6 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutBranchInput = {
@@ -24308,7 +25158,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateManyWithoutBranchInput = {
@@ -24373,7 +25222,6 @@ export namespace Prisma {
     reviews?: ReviewUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateWithoutStylistInput = {
@@ -24388,7 +25236,6 @@ export namespace Prisma {
     reviews?: ReviewUncheckedUpdateManyWithoutBookingNestedInput
     ExternalSession?: ExternalSessionUncheckedUpdateManyWithoutBookingNestedInput
     Payment?: PaymentUncheckedUpdateManyWithoutBookingNestedInput
-    Notification?: NotificationUncheckedUpdateManyWithoutBookingNestedInput
   }
 
   export type BookingUncheckedUpdateManyWithoutStylistInput = {
@@ -24426,16 +25273,6 @@ export namespace Prisma {
     payment_url?: string | null
     status: $Enums.PaymentStatus
     amount: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type NotificationCreateManyBookingInput = {
-    id?: number
-    user_id: number
-    payment_id?: number | null
-    message: string
-    status?: $Enums.NotificationStatus
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -24497,7 +25334,6 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    Notification?: NotificationUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateWithoutBookingInput = {
@@ -24509,7 +25345,6 @@ export namespace Prisma {
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    Notification?: NotificationUncheckedUpdateManyWithoutPaymentNestedInput
   }
 
   export type PaymentUncheckedUpdateManyWithoutBookingInput = {
@@ -24519,74 +25354,6 @@ export namespace Prisma {
     payment_url?: NullableStringFieldUpdateOperationsInput | string | null
     status?: EnumPaymentStatusFieldUpdateOperationsInput | $Enums.PaymentStatus
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUpdateWithoutBookingInput = {
-    message?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutNotificationNestedInput
-    payment?: PaymentUpdateOneWithoutNotificationNestedInput
-  }
-
-  export type NotificationUncheckedUpdateWithoutBookingInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    user_id?: IntFieldUpdateOperationsInput | number
-    payment_id?: NullableIntFieldUpdateOperationsInput | number | null
-    message?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutBookingInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    user_id?: IntFieldUpdateOperationsInput | number
-    payment_id?: NullableIntFieldUpdateOperationsInput | number | null
-    message?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationCreateManyPaymentInput = {
-    id?: number
-    user_id: number
-    booking_id?: number | null
-    message: string
-    status?: $Enums.NotificationStatus
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type NotificationUpdateWithoutPaymentInput = {
-    message?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneRequiredWithoutNotificationNestedInput
-    booking?: BookingUpdateOneWithoutNotificationNestedInput
-  }
-
-  export type NotificationUncheckedUpdateWithoutPaymentInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    user_id?: IntFieldUpdateOperationsInput | number
-    booking_id?: NullableIntFieldUpdateOperationsInput | number | null
-    message?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type NotificationUncheckedUpdateManyWithoutPaymentInput = {
-    id?: IntFieldUpdateOperationsInput | number
-    user_id?: IntFieldUpdateOperationsInput | number
-    booking_id?: NullableIntFieldUpdateOperationsInput | number | null
-    message?: StringFieldUpdateOperationsInput | string
-    status?: EnumNotificationStatusFieldUpdateOperationsInput | $Enums.NotificationStatus
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }

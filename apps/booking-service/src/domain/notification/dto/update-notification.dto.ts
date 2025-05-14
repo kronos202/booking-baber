@@ -1,4 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateNotificationDto } from './create-notification.dto';
+import { IsEnum, IsOptional } from 'class-validator';
 
-export class UpdateNotificationDto extends PartialType(CreateNotificationDto) {}
+export class UpdateNotificationDto {
+  @IsEnum(['UNREAD', 'READ'])
+  @IsOptional()
+  status?: string;
+}

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   HttpStatus,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
   UnprocessableEntityException,
@@ -30,11 +31,12 @@ import { NullableType } from 'src/utils/types/nullable';
 import { UserResponseDto } from '../user/dto/user-response.dto';
 import { AuthUser } from 'src/common/interfaces/user.interface';
 import ms from 'ms';
-
+import { google } from 'googleapis';
 @Injectable()
 export class AuthService {
   private readonly templateConfig: TemplateConfig;
   private readonly authConfig: AuthConfig;
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly userService: UserService,
     protected databaseService: DatabaseService,
@@ -42,6 +44,7 @@ export class AuthService {
     private readonly sessionService: SessionsService,
     private readonly authConfigService: ConfigService<AuthConfig>,
     private readonly templateConfigService: ConfigService<TemplateConfig>,
+    private readonly configService: ConfigService,
     @InjectQueue('email-queue') private readonly emailQueue: Queue,
   ) {
     this.authConfig = getAuthConfig(this.authConfigService);
@@ -374,5 +377,68 @@ export class AuthService {
       throw new UnprocessableEntityException('Tài khoản không tồn tại.');
     }
     return EncryptHelper.compare(password, storedPassword);
+  }
+
+  async refreshGoogleAccessToken(userId: number): Promise<string> {
+    this.logger.log(`Làm mới access token Google cho người dùng ${userId}`);
+
+    // Lấy thông tin credential từ database
+    const credential = await this.databaseService.credential.findFirst({
+      where: {
+        user_id: userId,
+        integration_type: 'GOOGLE',
+      },
+    });
+
+    if (!credential || !credential.refresh_token) {
+      this.logger.error(
+        `Không tìm thấy refresh token cho người dùng ${userId}`,
+      );
+      throw new UnauthorizedException('Không tìm thấy refresh token');
+    }
+
+    // Khởi tạo OAuth2 client
+    const oauth2Client = new google.auth.OAuth2(
+      this.configService.get('GOOGLE_CLIENT_ID'),
+      this.configService.get('GOOGLE_CLIENT_SECRET'),
+      this.configService.get('GOOGLE_REDIRECT_URI'),
+    );
+
+    // Đặt refresh token cho client
+    oauth2Client.setCredentials({
+      refresh_token: credential.refresh_token,
+    });
+
+    try {
+      // Yêu cầu access token mới
+      const { credentials } = await oauth2Client.refreshAccessToken();
+      const newAccessToken = credentials.access_token;
+
+      if (!newAccessToken) {
+        this.logger.error(
+          `Không thể làm mới access token cho người dùng ${userId}`,
+        );
+        throw new UnauthorizedException('Không thể làm mới access token');
+      }
+
+      // Cập nhật access token mới vào database
+      await this.databaseService.credential.update({
+        where: { id: credential.id },
+        data: {
+          token: newAccessToken,
+          updated_at: new Date(),
+        },
+      });
+
+      this.logger.log(
+        `Làm mới access token thành công cho người dùng ${userId}`,
+      );
+      return newAccessToken;
+    } catch (error) {
+      this.logger.error(`Lỗi khi làm mới access token: ${error.message}`);
+      throw new UnauthorizedException(
+        `Lỗi khi làm mới access token: ${error.message}`,
+      );
+    }
   }
 }
