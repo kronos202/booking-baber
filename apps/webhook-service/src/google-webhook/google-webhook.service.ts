@@ -7,13 +7,16 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-
+import { DatabaseService } from '../../../booking-service/src/database/database.service';
+import dayjs from 'dayjs';
+import {} from '@packages/integration';
 @Injectable()
 export class GoogleWebhookService {
   private readonly logger = new Logger(GoogleWebhookService.name);
 
   constructor(
     @Inject('WEBHOOK_SERVICE') private readonly client: ClientProxy,
+    private databaseService: DatabaseService,
   ) {}
 
   async handleGoogleCalendarWebhook(
@@ -43,5 +46,41 @@ export class GoogleWebhookService {
     }
 
     return { message: 'Webhook Google Calendar nhận thành công' };
+  }
+
+  async handle(credentialId: number) {
+    const foundCredential = await this.databaseService.credential.findFirst({
+      where: { id: credentialId },
+    });
+    if (!foundCredential) {
+      return;
+    }
+    const syncToken = foundCredential.syncToken;
+    const syncedEventsResponse =
+      await this.googleCalendarService.getSyncedEvents(
+        foundCredential.token,
+        syncToken,
+      );
+    const syncedEvents = syncedEventsResponse.data.items;
+    const syncedEventIds = syncedEvents.map((e) => e.id) as string[];
+    const externalSessions =
+      await this.databaseService.externalSession.findMany({
+        where: {
+          externalSessionId: { in: syncedEventIds },
+        },
+      });
+    for (const externalSession of externalSessions) {
+      const syncedEvent = syncedEvents.find(
+        (se) => se.id === externalSession.externalSessionId,
+      );
+      await this.databaseService.session.update({
+        where: {
+          id: externalSession.sessionId,
+        },
+        data: {
+          startAt: dayjs(syncedEvent.start.dateTime).format(),
+        },
+      });
+    }
   }
 }

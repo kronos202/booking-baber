@@ -92,11 +92,11 @@ model User {
   sessions Session[] 
   images Image[]
   credentials Credential[] @relation(name: "credential")
-  reviews     Review[]    @relation(name: "reviewer")
+  reviews     Review[]   @relation("CustomerReviews")
   bookings Booking[] @relation(name: "customer")
+  notifications Notification[]
 
   @@map("user")
-  Notification Notification[]
 }
 
 model Service {
@@ -109,23 +109,27 @@ model Service {
   duration    Int      // Thời gian thực hiện (phút)
   created_at  DateTime @default(now())
   bookings    Booking[]
+
+  reviews Review[]
 }
 
 model Review {
-  id          Int      @id @default(autoincrement())
-  booking_id  Int      @unique
-  booking     Booking  @relation(fields: [booking_id], references: [id], onDelete: Cascade)
-  branch_id   Int
-  branch      Branch   @relation(fields: [branch_id], references: [id], onDelete: Cascade)
-  user_id     Int
-  user        User     @relation(name: "reviewer", fields: [user_id], references: [id], onDelete: Cascade)
-  rating      Int      // Điểm đánh giá (1-5)
-  comment     String?  // Nhận xét
-  created_at  DateTime @default(now())
-  updated_at  DateTime @default(now()) @updatedAt
-
-  @@index([branch_id])
-  @@index([user_id])
+  id              Int           @id @default(autoincrement())
+  booking_id      Int
+  customer_id     Int
+  stylist_id      Int
+  service_id      Int
+  branch_id       Int
+  rating          Int           // 1-5 sao
+  comment         String?       // Nhận xét văn bản
+  is_visible      Boolean       @default(true) // Chủ tiệm có thể ẩn
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  booking         Booking       @relation(fields: [booking_id], references: [id])
+  customer        User          @relation("CustomerReviews", fields: [customer_id], references: [id])
+  stylist         Stylist       @relation(fields: [stylist_id], references: [id])
+  service         Service       @relation(fields: [service_id], references: [id])
+  branch          Branch        @relation(fields: [branch_id], references: [id]) // Thêm quan hệ
 }
 
 model Branch {
@@ -151,6 +155,8 @@ model Stylist {
   phone       String?
   created_at  DateTime @default(now())
   bookings    Booking[]
+
+  reviews Review[]
 }
 
 model Booking {
@@ -168,8 +174,8 @@ model Booking {
   total_price            Decimal  @db.Decimal(10, 2)
   created_at             DateTime @default(now())
   reviews                Review[]
-  ExternalSession ExternalSession[]
-  Payment Payment[]
+  externalSessions ExternalSession[]
+  payments Payment[]
 
   @@index([branch_id, startAt])
   @@index([startAt])

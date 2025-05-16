@@ -24,6 +24,7 @@
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
     "googleapis": "^148.0.0",
+    "packages": "^0.0.8",
     "stripe": "^18.1.0"
   }
 }
