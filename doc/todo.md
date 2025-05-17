@@ -1,0 +1,2 @@
+- Thêm logic gửi thông báo (Notification) khi có review mới.
+- Thêm middleware kiểm tra quyền (chỉ customer đã đặt lịch mới được review).
