@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Prisma, Session, User } from 'generated/prisma';
+import { Prisma, Session, User } from '@prisma/client';
 import { NullableType } from 'src/utils/types/nullable';
 import { BaseService } from 'src/common/services/base.service';
 import { DatabaseService } from 'src/database/database.service';

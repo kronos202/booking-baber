@@ -15,7 +15,6 @@ import dayjs from 'dayjs';
 import { getAuthConfig, getTemplateConfig } from 'src/utils/helpers/getConfig';
 import { ConfigService } from '@nestjs/config';
 import { AuthConfig } from 'src/config/auth/auth-config.types';
-import { Session, User } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
 import { TemplateConfig } from 'src/config/template/template.type';
 import { AuthEmailLoginDto } from './dto/auth-email-login.dto';
@@ -32,6 +31,7 @@ import { UserResponseDto } from '../user/dto/user-response.dto';
 import { AuthUser } from 'src/common/interfaces/user.interface';
 import ms from 'ms';
 import { google } from 'googleapis';
+import { User, Session } from '@prisma/client';
 @Injectable()
 export class AuthService {
   private readonly templateConfig: TemplateConfig;

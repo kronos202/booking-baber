@@ -1,6 +1,6 @@
 // src/common/interfaces/user.interface.ts
 
-import { Role } from 'generated/prisma';
+import { Role } from '@prisma/client';
 
 export interface AuthUser {
   id: number;

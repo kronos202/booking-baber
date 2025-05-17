@@ -15,9 +15,6 @@ import {
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { GetNotificationsDto } from './dto/get-notifications.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
 import {
   ApiTags,
   ApiBearerAuth,
@@ -26,6 +23,10 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { ParseIntPipe } from '@nestjs/common';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { RoleEnum } from 'src/common/enums/role.enum';
 
 @ApiTags('notification')
 @Controller('notification')
@@ -36,7 +37,7 @@ export class NotificationController {
 
   @Post('create')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles('admin', 'branch_manager')
+  @Roles(RoleEnum.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Tạo thông báo mới cho người dùng' })
   @ApiResponse({ status: 201, description: 'Thông báo được tạo thành công' })

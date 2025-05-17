@@ -9,7 +9,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
 import { DatabaseService } from '../../../booking-service/src/database/database.service';
 import dayjs from 'dayjs';
-import {} from '@packages/integration';
+import { GoogleCalendarService } from '@packages/integration';
 @Injectable()
 export class GoogleWebhookService {
   private readonly logger = new Logger(GoogleWebhookService.name);
@@ -17,6 +17,7 @@ export class GoogleWebhookService {
   constructor(
     @Inject('WEBHOOK_SERVICE') private readonly client: ClientProxy,
     private databaseService: DatabaseService,
+    private readonly googleCalendarService: GoogleCalendarService,
   ) {}
 
   async handleGoogleCalendarWebhook(
@@ -55,14 +56,20 @@ export class GoogleWebhookService {
     if (!foundCredential) {
       return;
     }
-    const syncToken = foundCredential.syncToken;
+    const syncToken = foundCredential.sync_token;
+    if (!syncToken) {
+      this.logger.log(
+        `Không có sync_token cho credentialId=${credentialId}, không thể đồng bộ hóa`,
+      );
+      return;
+    }
     const syncedEventsResponse =
       await this.googleCalendarService.getSyncedEvents(
         foundCredential.token,
         syncToken,
       );
     const syncedEvents = syncedEventsResponse.data.items;
-    const syncedEventIds = syncedEvents.map((e) => e.id) as string[];
+    const syncedEventIds = syncedEvents?.map((e) => e.id) as string[];
     const externalSessions =
       await this.databaseService.externalSession.findMany({
         where: {
@@ -70,15 +77,15 @@ export class GoogleWebhookService {
         },
       });
     for (const externalSession of externalSessions) {
-      const syncedEvent = syncedEvents.find(
+      const syncedEvent = syncedEvents?.find(
         (se) => se.id === externalSession.externalSessionId,
       );
-      await this.databaseService.session.update({
+      await this.databaseService.booking.update({
         where: {
-          id: externalSession.sessionId,
+          id: externalSession.bookingId,
         },
         data: {
-          startAt: dayjs(syncedEvent.start.dateTime).format(),
+          startAt: dayjs(syncedEvent?.start?.dateTime).format(),
         },
       });
     }

@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { UpdateSessionDto } from './dto/update-session.dto';
 import { BaseService } from 'src/common/services/base.service';
-import { Prisma, Session, User } from 'generated/prisma';
 import { DatabaseService } from 'src/database/database.service';
 import { NullableType } from 'src/utils/types/nullable';
+import { Prisma, Session, User } from '@prisma/client';
 
 @Injectable()
 export class SessionsService extends BaseService<

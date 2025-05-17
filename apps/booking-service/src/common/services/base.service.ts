@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { Prisma } from 'generated/prisma';
+import { Prisma } from '@barber-booking/prisma';
 import { DatabaseService } from 'src/database/database.service';
 import { OrderBy } from 'src/utils/types/orderBy';
 

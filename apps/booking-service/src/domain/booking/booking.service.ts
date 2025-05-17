@@ -224,7 +224,7 @@ export class BookingService {
 
     const bookings = await this.databaseService.booking.findMany({
       where: { branch_id: branchId },
-      include: { service: true, stylist: true, customer: true, Payment: true },
+      include: { service: true, stylist: true, customer: true, payments: true },
     });
 
     this.logger.log(
@@ -238,7 +238,7 @@ export class BookingService {
 
     const bookings = await this.databaseService.booking.findMany({
       where: { customer_id: userId },
-      include: { service: true, stylist: true, Payment: true },
+      include: { service: true, stylist: true, payments: true },
     });
 
     this.logger.log(`Fetched ${bookings.length} bookings for user ${userId}`);
@@ -250,7 +250,7 @@ export class BookingService {
 
     const booking = await this.databaseService.booking.findUnique({
       where: { id },
-      include: { service: true, stylist: true, branch: true, Payment: true },
+      include: { service: true, stylist: true, branch: true, payments: true },
     });
 
     if (!booking) {
@@ -343,6 +343,132 @@ export class BookingService {
 
     this.logger.log(`Booking ${id} updated successfully`);
     return { message: 'Booking updated' };
+  }
+
+  // apps/booking-service/src/booking/booking.service.ts
+  async filterBookings(
+    userId: number,
+    userRole: string,
+    branchId?: number,
+    from?: string,
+    to?: string,
+  ) {
+    this.logger.log(
+      `Filtering bookings for user ${userId}, role ${userRole}, branch ${branchId || 'all'}`,
+    );
+
+    // Validate inputs
+    if (branchId && userRole !== 'admin' && userRole !== 'branch_manager') {
+      this.logger.warn(
+        `User role ${userRole} not authorized to filter by branch`,
+      );
+      throw new ForbiddenException(
+        'Only admins and branch managers can filter by branch',
+      );
+    }
+
+    if (!from || !to) {
+      throw new BadRequestException('Missing from or to date');
+    }
+
+    const startDate = dayjs(from).tz(this.TIMEZONE).startOf('day').toDate();
+    const endDate = dayjs(to).tz(this.TIMEZONE).endOf('day').toDate();
+
+    if (dayjs(endDate).isBefore(startDate)) {
+      throw new BadRequestException('End date must be after start date');
+    }
+
+    try {
+      const where: any = {
+        startAt: { gte: startDate, lte: endDate },
+      };
+
+      if (branchId) {
+        where.branch_id = branchId;
+      } else if (userRole === 'customer') {
+        where.customer_id = userId;
+      }
+
+      const bookings = await this.databaseService.booking.findMany({
+        where,
+        include: {
+          branch: true,
+          stylist: true,
+          service: true,
+          customer: { select: { username: true } },
+          payments: true,
+        },
+        orderBy: { startAt: 'asc' },
+      });
+
+      this.logger.log(`Found ${bookings.length} bookings`);
+      return bookings;
+    } catch (error) {
+      this.logger.error(`Failed to filter bookings: ${error.message}`);
+      throw new BadRequestException('Failed to filter bookings');
+    }
+  }
+
+  // apps/booking-service/src/booking/booking.service.ts
+  async confirmCashPayment(
+    bookingId: number,
+    userId: number,
+    userRole: string,
+  ) {
+    this.logger.log(
+      `Confirming cash payment for booking ${bookingId} by user ${userId}`,
+    );
+
+    if (userRole !== 'admin' && userRole !== 'branch_manager') {
+      this.logger.warn(
+        `User role ${userRole} not authorized to confirm cash payment`,
+      );
+      throw new ForbiddenException(
+        'Only admins and branch managers can confirm cash payments',
+      );
+    }
+
+    const booking = await this.databaseService.booking.findUnique({
+      where: { id: bookingId },
+      include: { payments: true },
+    });
+    if (!booking) {
+      throw new BadRequestException('Booking not found');
+    }
+
+    const payment = booking.payments.find((p) => p.booking_id === bookingId);
+    if (!payment || payment.payment_method !== 'CASH') {
+      throw new BadRequestException('No cash payment found for this booking');
+    }
+
+    if (payment.status !== 'PENDING') {
+      throw new BadRequestException('Payment is not in pending state');
+    }
+
+    try {
+      await this.databaseService.payment.update({
+        where: { booking_id: bookingId },
+        data: { status: 'SUCCEEDED', updated_at: dayjs().toDate() },
+      });
+
+      await this.databaseService.booking.update({
+        where: { id: bookingId },
+        data: { status: 'confirmed', updated_at: dayjs().toDate() },
+      });
+
+      const notificationDto: CreateNotificationDto = {
+        userId: booking.customer_id!,
+        message: `Thanh toán tiền mặt cho lịch hẹn #${bookingId} đã được xác nhận.`,
+        channels: ['email', 'sms'],
+      };
+      await this.notificationService.sendNotification(notificationDto);
+
+      this.logger.log(`Cash payment confirmed for booking ${bookingId}`);
+      return { message: 'Cash payment confirmed' };
+    } catch (error) {
+      this.logger.error(`Failed to confirm cash payment: ${error.message}`);
+      throw new BadRequestException('Failed to confirm cash payment');
+    }
   }
 
   private async syncGoogleCalendar(

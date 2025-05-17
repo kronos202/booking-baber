@@ -1,4 +1,4 @@
-import { Session } from 'generated/prisma';
+import { Session } from '@prisma/client';
 
 export type JwtRefreshPayloadType = {
   sessionId: Session['id'];

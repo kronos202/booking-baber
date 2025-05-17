@@ -5,7 +5,7 @@ import { CloudinaryResponse } from 'src/utils/types/cloudinary-response';
 import * as fs from 'fs';
 import * as path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import { ImageType, StorageType } from 'generated/prisma';
+import { ImageType, StorageType } from '@prisma/client';
 
 @Injectable()
 export class UploadService {

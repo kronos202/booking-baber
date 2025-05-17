@@ -11,9 +11,9 @@ import {
 import { BranchService } from './branch.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
-import { Role } from 'generated/prisma';
 import { AuthUser } from 'src/common/interfaces/user.interface';
 import { UpdateBranchDto } from './dto/update-branch.dto';
+import { Role } from '@prisma/client';
 
 @Controller('branch')
 export class BranchController {

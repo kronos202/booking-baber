@@ -1,0 +1,280 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum Provider {
+  GOOGLE
+  FACEBOOK
+  EMAIL
+}
+
+enum NotificationStatus {
+  READ
+  UNREAD
+}
+
+enum CredentialType {
+  GOOGLE
+  STRIPE
+  ZALO
+}
+
+enum Calendar_Type {
+  GOOGLE_CALENDAR
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+}
+
+enum Role {
+  CUSTOMER
+  BRANCH_MANAGER
+  BRANCH_STAFF
+  ADMIN
+}
+
+enum PaymentMethod {
+  STRIPE
+  CASH
+  VN_PAY
+}
+
+
+enum ImageType {
+  AVATAR
+  OTHER
+}
+enum StorageType {
+  LOCAL
+  CLOUDINARY
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  email    String  @unique
+  firstName    String @map("first_name")   @db.VarChar(50)
+  lastName    String @map("last_name")   @db.VarChar(50)
+  zalo_id     String? @map("zalo_id") @db.VarChar(50)
+  role        Role        @default(CUSTOMER) // Sử dụng enum Role
+  username String @unique @db.VarChar(50)
+  password String? @db.VarChar(255)
+  phone       String      @unique
+  fcmToken        String?
+  bio      String? @db.Text
+  active Boolean @default(false)
+  provider Provider? @default(EMAIL) 
+  socialId String? @map("social_id")
+
+  avatar String @default("https://api.realworld.io/images/smiley-cyrus.jpeg")
+
+  deletedAt DateTime? @default(dbgenerated("null")) @map("deleted_at")
+  lastLogin DateTime? @updatedAt @map("last_login")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  sessions Session[] 
+  images Image[]
+  credentials Credential[] @relation(name: "credential")
+  reviews     Review[]   @relation("CustomerReviews")
+  bookings Booking[] @relation(name: "customer")
+  notifications Notification[]
+
+  @@map("user")
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  branch_id   Int
+  branch      Branch   @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  name        String
+  description        String?
+  price       Decimal  @db.Decimal(10, 2)
+  duration    Int      // Thời gian thực hiện (phút)
+  created_at  DateTime @default(now())
+  bookings    Booking[]
+
+  reviews Review[]
+}
+
+model Review {
+  id              Int           @id @default(autoincrement())
+  booking_id      Int
+  customer_id     Int
+  stylist_id      Int
+  service_id      Int
+  branch_id       Int
+  rating          Int           // 1-5 sao
+  comment         String?       // Nhận xét văn bản
+  is_visible      Boolean       @default(true) // Chủ tiệm có thể ẩn
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  booking         Booking       @relation(fields: [booking_id], references: [id])
+  customer        User          @relation("CustomerReviews", fields: [customer_id], references: [id])
+  stylist         Stylist       @relation(fields: [stylist_id], references: [id])
+  service         Service       @relation(fields: [service_id], references: [id])
+  branch          Branch        @relation(fields: [branch_id], references: [id]) // Thêm quan hệ
+}
+
+model Branch {
+  id          Int        @id @default(autoincrement())
+  name        String
+  imageUrl    String?
+  address     String
+  phone       String?
+  open_time   String     // Giờ mở cửa (VD: "08:00")
+  close_time  String     // Giờ đóng cửa (VD: "20:00")
+  created_at  DateTime   @default(now())
+  services    Service[]
+  stylists    Stylist[]
+  bookings    Booking[]
+  reviews     Review[]
+}
+
+model Stylist {
+  id          Int      @id @default(autoincrement())
+  branch_id   Int
+  branch      Branch   @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  name        String
+  phone       String?
+  created_at  DateTime @default(now())
+  bookings    Booking[]
+
+  reviews Review[]
+}
+
+model Booking {
+  id                     Int      @id @default(autoincrement())
+  branch_id              Int
+  branch                 Branch   @relation(fields: [branch_id], references: [id], onDelete: Cascade)
+  stylist_id             Int?
+  stylist                Stylist? @relation(fields: [stylist_id], references: [id], onDelete: SetNull)
+  service_id             Int
+  service                Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  customer_id            Int?
+  customer               User?    @relation(name: "customer", fields: [customer_id], references: [id], onDelete: SetNull)
+  startAt                DateTime
+  status                 String   // pending, confirmed, completed, cancelled
+  total_price            Decimal  @db.Decimal(10, 2)
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  reviews                Review[]
+  externalSessions ExternalSession[]
+  payments Payment[]
+
+  @@index([branch_id, startAt])
+  @@index([startAt])
+}
+
+
+model Credential {
+  id               Int      @id @default(autoincrement())
+  user_id          Int
+  user             User     @relation(name: "credential", fields: [user_id], references: [id], onDelete: Cascade)
+  integration_type CredentialType   // google_calendar, stripe, zalo
+  token            String   // Access token
+  sync_token       String?  // Refresh token hoặc sync token
+  refresh_token     String?  // Refresh token hoặc sync token
+  data             Json     // Dữ liệu bổ sung (VD: calendarId)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now()) @updatedAt
+
+  @@unique([user_id, integration_type])
+  @@index([user_id, integration_type])
+  @@map("credential")
+}
+
+
+model Payment {
+  id                Int       @id @default(autoincrement())
+  booking_id        Int       @unique
+  booking           Booking   @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+  payment_method    PaymentMethod    // stripe, cash, vnpay
+  payment_intent_id String?   // ID giao dịch (VD: Stripe PaymentIntent ID, VNPay TxnRef)
+  payment_url       String?   // URL thanh toán (VD: VNPay checkout URL)
+  status            PaymentStatus    // pending, succeeded, failed, refunded
+  amount            Decimal   @db.Decimal(10, 2)
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @default(now()) @updatedAt
+
+  @@index([booking_id])
+  @@map("payment")
+}
+
+model ExternalSession {
+  id                Int       @id @default(autoincrement())
+  calendarType      Calendar_Type    @map("calendar_type")
+  bookingId         Int       @unique @map("session_id")
+  booking           Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  externalSessionId String    @map("external_session_id")
+  created_at        DateTime  @default(now())
+
+  @@map("external_session")
+}
+
+
+model Image {
+  id          Int    @id @default(autoincrement())
+  imageUrl String 
+  cloudinaryId String? 
+  metadata    Json?
+  // type: avatar:message
+  userId    Int  @map("user_id")
+  user      User      @relation(fields: [userId], references: [id],onDelete: Cascade)
+
+  storageType StorageType @default(LOCAL) // Kiểu lưu trữ (local hoặc cloudinary)
+  type       ImageType   @default(AVATAR) // Loại ảnh sử dụng enum
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("image")
+}
+
+model Session {
+  id          Int    @id @default(autoincrement())
+  userId    Int  @map("user_id")
+  user      User      @relation(fields: [userId], references: [id],onDelete: Cascade)
+  hash      String    @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("session")
+}
+
+model Notification {
+  id              Int           @id @default(autoincrement())
+  user_id         Int
+  message         String
+  status          NotificationStatus @default(UNREAD)
+  channels        String?       // e.g., "email,sms,push"
+  delivery_status String?       // e.g., FAILED_EMAIL, FAILED_SMS
+  created_at      DateTime      @default(now())
+  updated_at      DateTime      @updatedAt
+  user            User          @relation(fields: [user_id], references: [id])
+}
+
+model WebhookLog {
+  id              Int           @id @default(autoincrement())
+  provider        String        // stripe, vnpay, twilio
+  event           String        // e.g., payment_intent.succeeded
+  payload         Json          // Dữ liệu webhook
+  status          String        // success, failed
+  error_message   String?       // Lỗi nếu có
+  created_at      DateTime      @default(now())
+}

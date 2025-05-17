@@ -14,8 +14,8 @@ import { VNPayProvider } from './provider/vnpay.provider';
 import { CashProvider } from './provider/cash.provider';
 import { DatabaseService } from 'src/database/database.service';
 import { GoogleWebhookService } from '../../../../webhook-service/src/google-webhook/google-webhook.service';
-import { PaymentMethod, PaymentStatus } from 'generated/prisma';
 import { RequestWithRawBody } from 'src/raw-body.middleware';
+import { PaymentMethod, PaymentStatus } from '@prisma/client';
 
 // Define return types for each provider's createPayment method
 type StripeResponse = { clientSecret: string; paymentIntentId: string };

@@ -1,6 +1,6 @@
 // apps/cron-service/src/cron/cron.service.ts
 import { Injectable, Logger, Inject } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service';
 import { ClientProxy } from '@nestjs/microservices';
 import dayjs from 'dayjs';
@@ -31,7 +31,7 @@ export class CronService {
           },
         },
         include: {
-          customer: { select: { name: true, id: true } },
+          customer: { select: { username: true, id: true } },
           service: true,
           branch: true,
         },
@@ -140,7 +140,7 @@ export class CronService {
             created_at: { gte: lastWeek },
             is_visible: true,
           },
-          include: { customer: { select: { name: true } }, service: true },
+          include: { customer: { select: { username: true } }, service: true },
         });
 
         const averageRating =

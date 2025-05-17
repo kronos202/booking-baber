@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { StorageType } from 'generated/prisma';
+import { StorageType } from '@prisma/client';
 
 @Controller('upload')
 export class UploadController {

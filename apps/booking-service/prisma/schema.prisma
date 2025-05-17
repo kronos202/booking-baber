@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -173,6 +172,7 @@ model Booking {
   status                 String   // pending, confirmed, completed, cancelled
   total_price            Decimal  @db.Decimal(10, 2)
   created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
   reviews                Review[]
   externalSessions ExternalSession[]
   payments Payment[]

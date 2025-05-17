@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaClient } from 'generated/prisma';
+import { PrismaClient } from '@barber-booking/prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { AppConfig } from 'src/config/app/app-config.type';
 import { getAppConfig } from 'src/utils/helpers/getConfig';
