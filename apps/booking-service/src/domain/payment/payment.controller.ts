@@ -6,7 +6,6 @@ import {
   Logger,
   Request,
   Response,
-  Query,
 } from '@nestjs/common';
 import { PaymentService } from './payment.service';
 import { Response as ExpressResponse } from 'express';
@@ -17,7 +16,6 @@ import {
   ApiBody,
   ApiQuery,
 } from '@nestjs/swagger';
-import { ParseIntPipe } from '@nestjs/common';
 import { RequestWithRawBody } from 'src/raw-body.middleware';
 
 @ApiTags('payment')
@@ -116,40 +114,6 @@ export class PaymentController {
       res.status(400).json({ error: error.message });
     }
   }
-
-  @Post('google-calendar/webhook')
-  @ApiOperation({ summary: 'Xử lý webhook Google Calendar (dự phòng)' })
-  @ApiResponse({ status: 200, description: 'Webhook xử lý thành công' })
-  @ApiQuery({
-    name: 'credentialId',
-    required: true,
-    description: 'ID thông tin xác thực Google',
-  })
-  @ApiQuery({
-    name: 'token',
-    required: true,
-    description: 'Token xác thực webhook',
-  })
-  async handleGoogleCalendarWebhook(
-    @Query('credentialId', ParseIntPipe) credentialId: number,
-    @Query('token') webhookToken: string,
-    @Response() res: ExpressResponse,
-  ) {
-    this.logger.debug(
-      `Received Google Calendar webhook (HTTP): credentialId=${credentialId}`,
-    );
-    try {
-      await this.paymentService.handleGoogleCalendarWebhook({
-        credentialId,
-        webhookToken,
-      });
-      res.status(200).json({ received: true });
-    } catch (error) {
-      this.logger.error(`Google Calendar webhook error: ${error.message}`);
-      res.status(400).json({ error: error.message });
-    }
-  }
-
   @Post('refund')
   @ApiOperation({ summary: 'Hoàn tiền cho thanh toán' })
   @ApiResponse({ status: 200, description: 'Hoàn tiền thành công' })

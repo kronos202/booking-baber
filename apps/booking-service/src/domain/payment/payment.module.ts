@@ -3,14 +3,12 @@ import { PaymentService } from './payment.service';
 import { PaymentController } from './payment.controller';
 import { DatabaseModule } from 'src/database/database.module';
 import { NotificationModule } from '../notification/notification.module';
-import { GoogleWebhookModule } from '../../../../webhook-service/src/google-webhook/google-webhook.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
   imports: [
     DatabaseModule,
     NotificationModule,
-    GoogleWebhookModule,
     ClientsModule.register([
       {
         name: 'WEBHOOK_SERVICE',

@@ -19,7 +19,7 @@ export class GoogleCalendarService {
       redirectUri: config.redirectUri,
     });
 
-    this.webhookUri = config.webhookUri;
+    this.webhookUri = config.webhookUri ?? '';
   }
 
   getToken(code: string) {

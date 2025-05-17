@@ -7,16 +7,16 @@ import {
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
-import { DatabaseService } from '../../../booking-service/src/database/database.service';
 import dayjs from 'dayjs';
 import { GoogleCalendarService } from '@packages/integration';
+import { PrismaService } from 'src/prisma/prisma.service';
 @Injectable()
 export class GoogleWebhookService {
   private readonly logger = new Logger(GoogleWebhookService.name);
 
   constructor(
     @Inject('WEBHOOK_SERVICE') private readonly client: ClientProxy,
-    private databaseService: DatabaseService,
+    private databaseService: PrismaService,
     private readonly googleCalendarService: GoogleCalendarService,
   ) {}
 

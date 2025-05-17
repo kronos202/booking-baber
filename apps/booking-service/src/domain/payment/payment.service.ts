@@ -13,7 +13,6 @@ import { StripeProvider } from './provider/stripe.provider';
 import { VNPayProvider } from './provider/vnpay.provider';
 import { CashProvider } from './provider/cash.provider';
 import { DatabaseService } from 'src/database/database.service';
-import { GoogleWebhookService } from '../../../../webhook-service/src/google-webhook/google-webhook.service';
 import { RequestWithRawBody } from 'src/raw-body.middleware';
 import { PaymentMethod, PaymentStatus } from '@prisma/client';
 
@@ -47,7 +46,6 @@ export class PaymentService {
     private readonly databaseService: DatabaseService,
     private readonly configService: ConfigService,
     private readonly notificationService: NotificationService,
-    private readonly googleWebhookService: GoogleWebhookService,
     private readonly stripeProvider: StripeProvider,
     private readonly vnpayProvider: VNPayProvider,
     private readonly cashProvider: CashProvider,
@@ -321,47 +319,6 @@ export class PaymentService {
       this.logger.log(`Webhook Twilio xử lý thành công: ${body.MessageSid}`);
     } catch (error) {
       this.logger.error(`Lỗi khi xử lý webhook Twilio: ${error.message}`);
-      await this.databaseService.webhookLog.update({
-        where: { id: webhookLog.id },
-        data: { status: 'failed', error_message: error.message },
-      });
-      throw new InternalServerErrorException('Lỗi khi xử lý webhook');
-    }
-  }
-
-  @EventPattern('google_calendar_webhook')
-  async handleGoogleCalendarWebhook({
-    credentialId,
-    webhookToken,
-  }: {
-    credentialId: number;
-    webhookToken: string;
-  }) {
-    this.logger.log(
-      `Xử lý webhook Google Calendar từ queue: credentialId=${credentialId}`,
-    );
-
-    const webhookLog = await this.databaseService.webhookLog.create({
-      data: {
-        provider: 'google_calendar',
-        event: 'calendar_sync',
-        payload: { credentialId, webhookToken },
-        status: 'success',
-      },
-    });
-
-    try {
-      await this.googleWebhookService.handleGoogleCalendarWebhook(
-        credentialId,
-        webhookToken,
-      );
-      this.logger.log(
-        `Webhook Google Calendar xử lý thành công: credentialId=${credentialId}`,
-      );
-    } catch (error) {
-      this.logger.error(
-        `Lỗi khi xử lý webhook Google Calendar: ${error.message}`,
-      );
       await this.databaseService.webhookLog.update({
         where: { id: webhookLog.id },
         data: { status: 'failed', error_message: error.message },
