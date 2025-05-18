@@ -2,79 +2,120 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { DatabaseService } from 'src/database/database.service';
+import { CreateStylistDto } from './dto/create-stylist.dto';
+import { Role, Stylist } from '@prisma/client';
+import { UpdateStylistDto } from './dto/update-stylist.dto';
 
 @Injectable()
 export class StylistService {
   constructor(protected databaseService: DatabaseService) {}
 
-  async createStylist(
-    branchId: number,
-    name: string,
-    phone: string,
-    userRole: string,
-  ) {
-    if (userRole !== 'admin' && userRole !== 'branch_manager')
+  async create(
+    createStylistDto: CreateStylistDto,
+    userRole: Role,
+  ): Promise<Stylist> {
+    if (userRole !== Role.ADMIN && userRole !== Role.BRANCH_MANAGER)
       throw new ForbiddenException(
         'Only admins and branch managers can create stylists',
       );
+
+    // Kiểm tra branch_id tồn tại
     const branch = await this.databaseService.branch.findUnique({
-      where: { id: branchId },
+      where: { id: createStylistDto.branchId },
     });
-    if (!branch) throw new BadRequestException('Branch not found');
+    if (!branch) {
+      throw new NotFoundException(
+        `Không tìm thấy chi nhánh với ID ${createStylistDto.branchId}`,
+      );
+    }
+
     return this.databaseService.stylist.create({
-      data: { branch_id: branchId, name, phone },
+      data: {
+        branch: { connect: { id: createStylistDto.branchId } },
+        name: createStylistDto.name,
+        phone: createStylistDto.phone,
+      },
     });
   }
 
-  async getStylists(branchId: number) {
+  async getStylists(branchId: number): Promise<Stylist[]> {
     return this.databaseService.stylist.findMany({
       where: { branch_id: branchId },
     });
   }
 
-  async getStylist(branchId: number, id: number) {
+  async getStylist(branchId: number, id: number): Promise<Stylist> {
     const stylist = await this.databaseService.stylist.findUnique({
       where: { id },
     });
     if (!stylist || stylist.branch_id !== branchId)
-      throw new BadRequestException('Stylist not found');
+      throw new BadRequestException('Không tìm thấy stylist');
     return stylist;
   }
 
-  async updateStylist(
-    branchId: number,
+  async update(
     id: number,
-    name: string,
-    phone: string,
-    userRole: string,
-  ) {
-    if (userRole !== 'admin' && userRole !== 'branch_manager')
+    userRole: Role,
+    updateStylistDto: UpdateStylistDto,
+  ): Promise<Stylist> {
+    if (userRole !== Role.ADMIN && userRole !== Role.BRANCH_MANAGER) {
       throw new ForbiddenException(
-        'Only admins and branch managers can update stylists',
+        'Chỉ ADMIN và MANAGER có thể cập nhật stylist',
       );
+    }
+
     const stylist = await this.databaseService.stylist.findUnique({
       where: { id },
     });
-    if (!stylist || stylist.branch_id !== branchId)
-      throw new BadRequestException('Stylist not found');
+
+    if (!stylist || stylist.branch_id !== updateStylistDto.branchId)
+      throw new NotFoundException(`Không tìm thấy stylist với ID ${id}`);
+
+    // Kiểm tra branch_id nếu được cung cấp
+    if (updateStylistDto.branchId) {
+      const branch = await this.databaseService.branch.findUnique({
+        where: { id: updateStylistDto.branchId },
+      });
+      if (!branch) {
+        throw new NotFoundException(
+          `Không tìm thấy chi nhánh với ID ${updateStylistDto.branchId}`,
+        );
+      }
+    }
+
     return this.databaseService.stylist.update({
       where: { id },
-      data: { name, phone },
+      data: {
+        branch: updateStylistDto.branchId
+          ? { connect: { id: updateStylistDto.branchId } }
+          : undefined,
+        name: updateStylistDto.name,
+        phone: updateStylistDto.phone,
+      },
     });
   }
 
-  async deleteStylist(branchId: number, id: number, userRole: string) {
-    if (userRole !== 'admin' && userRole !== 'branch_manager')
-      throw new ForbiddenException(
-        'Only admins and branch managers can delete stylists',
-      );
+  async deleteStylist(
+    branchId: number,
+    id: number,
+    userRole: Role,
+  ): Promise<void> {
+    if (userRole !== Role.ADMIN && userRole !== Role.BRANCH_MANAGER) {
+      throw new ForbiddenException('Chỉ ADMIN có thể xóa stylist');
+    }
+
     const stylist = await this.databaseService.stylist.findUnique({
       where: { id },
     });
-    if (!stylist || stylist.branch_id !== branchId)
-      throw new BadRequestException('Stylist not found');
-    return this.databaseService.stylist.delete({ where: { id } });
+
+    if (!stylist) throw new BadRequestException('Không tìm thấy stylist');
+
+    if (stylist.branch_id !== branchId)
+      throw new BadRequestException('Stylist không thuộc chi nhánh này');
+
+    await this.databaseService.stylist.delete({ where: { id } });
   }
 }

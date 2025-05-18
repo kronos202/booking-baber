@@ -2,65 +2,66 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   Param,
+  ParseIntPipe,
+  Patch,
   Post,
-  Put,
+  UseGuards,
 } from '@nestjs/common';
 import { BranchService } from './branch.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { AuthUser } from 'src/common/interfaces/user.interface';
 import { UpdateBranchDto } from './dto/update-branch.dto';
-import { Role } from '@prisma/client';
+import { Branch } from '@prisma/client';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { RoleEnum } from 'src/common/enums/role.enum';
 
 @Controller('branch')
 export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 
   @Post()
-  async create(@Body() dto: CreateBranchDto, @CurrentUser() user: AuthUser) {
-    if (user.role !== 'ADMIN') {
-      throw new ForbiddenException('Only admins can create branches');
-    }
-    return this.branchService.createBranch(
-      dto.name,
-      dto.address,
-      dto.phone,
-      user.role as Role,
-      dto.close_time,
-      dto.open_time,
-    );
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN) // Chỉ ADMIN có thể tạo chi nhánh
+  async create(
+    @Body() createBranchDto: CreateBranchDto,
+    @CurrentUser() user: AuthUser, // Lấy thông tin người dùng từ request
+  ): Promise<Branch> {
+    return this.branchService.create(createBranchDto, user.role);
   }
 
   @Get()
-  async findAll() {
-    return this.branchService.getBranches();
+  async findAll(): Promise<Branch[]> {
+    return await this.branchService.getBranches();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.branchService.getBranch(parseInt(id));
+  async getBranch(@Param('id', ParseIntPipe) id: number): Promise<Branch> {
+    return this.branchService.getBranch(id);
   }
 
-  @Put(':id')
+  @Patch(':id')
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN) // Chỉ ADMIN có thể cập nhật chi nhánh
   async update(
-    @Param('id') id: string,
-    @Body() dto: UpdateBranchDto,
-    @CurrentUser() user: AuthUser,
-  ) {
-    return this.branchService.updateBranch(
-      parseInt(id),
-      dto.name,
-      dto.address,
-      dto.phone,
-      user.role,
-    );
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateBranchDto: UpdateBranchDto,
+    @CurrentUser() user: AuthUser, // Lấy thông tin người dùng từ decorator
+  ): Promise<Branch> {
+    return this.branchService.update(id, user.role, updateBranchDto);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: string, @CurrentUser() user: AuthUser) {
-    return this.branchService.deleteBranch(parseInt(id), user.role);
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN) // Chỉ ADMIN có thể xóa chi nhánh
+  async deleteBranch(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: AuthUser,
+  ): Promise<void> {
+    // Chuyển đổi user.role thành string để phù hợp với định nghĩa của deleteBranch
+    await this.branchService.deleteBranch(id, user.role);
   }
 }

@@ -5,75 +5,66 @@ import {
   Body,
   Param,
   Delete,
-  Put,
+  UseGuards,
+  ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CurrentUser } from 'src/common/decorators/user.decorator';
 import { AuthUser } from 'src/common/interfaces/user.interface';
+import { RolesGuard } from 'src/common/guards/role.guard';
+import { RoleEnum } from 'src/common/enums/role.enum';
+import { Roles } from 'src/common/decorators/role.decorator';
+import { CreateServiceDto } from './dto/create-service.dto';
+import { Service } from '@prisma/client';
+import { UpdateServiceDto } from './dto/update-service.dto';
 
 @Controller('service')
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN) // Chỉ ADMIN có thể tạo dịch vụ
   async create(
-    @Param('branchId') branchId: string,
-    @Body('name') name: string,
-    @Body('price') price: number,
-    @Body('duration') duration: number,
-    @CurrentUser() user: AuthUser,
-  ) {
-    return this.serviceService.createService(
-      parseInt(branchId),
-      name,
-      price,
-      duration,
-      user.role,
-    );
+    @Body() createServiceDto: CreateServiceDto,
+    @CurrentUser() user: AuthUser, // Lấy thông tin người dùng từ request
+  ): Promise<Service> {
+    return this.serviceService.create(createServiceDto, user.role);
   }
 
   @Get()
-  async getServices(@Param('branchId') branchId: string) {
+  async getServices(@Param('branchId') branchId: string): Promise<Service[]> {
     return this.serviceService.getServices(parseInt(branchId));
   }
 
   @Get(':id')
   async getService(
-    @Param('branchId') branchId: string,
-    @Param('id') id: string,
+    @Param('branchId', ParseIntPipe) branchId: number,
+    @Param('id', ParseIntPipe) id: number,
   ) {
-    return this.serviceService.getService(parseInt(branchId), parseInt(id));
+    return this.serviceService.getService(id, branchId);
   }
 
-  @Put(':id')
+  @Patch(':id')
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN) // Chỉ ADMIN có thể cập nhật dịch vụ
   async update(
-    @Param('branchId') branchId: string,
-    @Param('id') id: string,
-    @Body('name') name: string,
-    @Body('price') price: number,
-    @Body('duration') duration: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateServiceDto: UpdateServiceDto,
     @CurrentUser() user: AuthUser,
-  ) {
-    return this.serviceService.updateService(
-      parseInt(branchId),
-      parseInt(id),
-      name,
-      price,
-      duration,
-      user.role,
-    );
+  ): Promise<Service> {
+    return this.serviceService.update(id, user.role, updateServiceDto);
   }
 
   @Delete(':id')
-  async delete(
-    @Param('branchId') branchId: string,
-    @Param('id') id: string,
+  @UseGuards(RolesGuard)
+  @Roles(RoleEnum.ADMIN) // Chỉ ADMIN có thể xóa dịch vụ
+  async deleteService(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('branchId', ParseIntPipe) branchId: number,
     @CurrentUser() user: AuthUser,
-  ) {
-    return this.serviceService.deleteService(
-      parseInt(branchId),
-      parseInt(id),
-      user.role,
-    );
+  ): Promise<void> {
+    await this.serviceService.deleteService(branchId, id, user.role);
   }
 }

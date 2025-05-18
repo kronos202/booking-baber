@@ -1,7 +1,4 @@
-export class UpdateBranchDto {
-  name?: string;
-  address?: string;
-  phone?: string;
-  open_time?: string;
-  close_time?: string;
-}
+import { PartialType } from '@nestjs/mapped-types';
+import { CreateBranchDto } from './create-branch.dto';
+
+export class UpdateBranchDto extends PartialType(CreateBranchDto) {}

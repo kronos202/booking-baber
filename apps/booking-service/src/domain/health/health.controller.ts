@@ -3,7 +3,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 
 @Controller('health')
 export class HealthController {
-  @Get('')
+  @Get()
   @Public()
   health() {
     return 'OK';
