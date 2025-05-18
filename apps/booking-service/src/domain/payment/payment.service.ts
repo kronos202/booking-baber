@@ -17,7 +17,8 @@ import { RequestWithRawBody } from 'src/raw-body.middleware';
 import { PaymentMethod, PaymentStatus } from '@prisma/client';
 
 // Define return types for each provider's createPayment method
-type StripeResponse = { clientSecret: string; paymentIntentId: string };
+// type StripeResponse = { clientSecret: string; paymentIntentId: string };
+type StripeResponse = { sessionId: string; sessionUrl: string };
 type VNPayResponse = { paymentUrl: string };
 type CashResponse = { message: string };
 type ProviderResponse = StripeResponse | VNPayResponse | CashResponse;
@@ -144,7 +145,7 @@ export class PaymentService {
         const stripeResponse = providerResponse as StripeResponse;
         await this.databaseService.payment.update({
           where: { id: payment.id },
-          data: { payment_intent_id: stripeResponse.paymentIntentId },
+          data: { payment_intent_id: stripeResponse.sessionId },
         });
       } else if (paymentMethod.toLowerCase() === 'vnpay') {
         const vnpayResponse = providerResponse as VNPayResponse;
